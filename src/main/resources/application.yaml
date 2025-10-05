@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    username: ${DATA_USERNAME}
+    password: ${DATA_PASSWORD}
+    url: jdbc:postgresql://${DATA_HOST}:${DATA_PORT}/${DATA_NAME}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        show_sql: true
+        format_sql: true
+
