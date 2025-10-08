@@ -1,6 +1,8 @@
 package com.IlyaTr.movie_catalog.dto;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.*;
+
 
 
 @Data
@@ -10,5 +12,6 @@ import lombok.*;
 @Setter
 @Builder
 public class GenreCreateEditDto{
+    @NotEmpty
     private String name;
 }

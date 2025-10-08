@@ -3,8 +3,7 @@ package com.IlyaTr.movie_catalog.mapper;
 import com.IlyaTr.movie_catalog.dto.GenreCreateEditDto;
 import com.IlyaTr.movie_catalog.dto.GenreReadDto;
 import com.IlyaTr.movie_catalog.entities.Genre;
-import org.mapstruct.Mapper;
-import org.mapstruct.MappingTarget;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring")
 public interface GenreMapper {
@@ -12,5 +11,6 @@ public interface GenreMapper {
 
     GenreReadDto toReadDto(Genre genre);
 
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     Genre updateEntity(GenreCreateEditDto genreDto, @MappingTarget Genre genre);
 }

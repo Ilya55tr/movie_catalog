@@ -26,7 +26,7 @@ public class Movie {
     @EqualsAndHashCode.Include
     private Integer id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String title;
 
     @Column(name = "release_year", nullable = false)

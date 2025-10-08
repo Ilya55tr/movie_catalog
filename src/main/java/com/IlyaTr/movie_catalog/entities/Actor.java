@@ -24,7 +24,7 @@ public class Actor {
     @EqualsAndHashCode.Include
     private Integer id;
 
-    @Column(length = 150, nullable = false)
+    @Column(length = 150, nullable = false, unique = true)
     private String full_name;
 
     @Column(nullable = false)

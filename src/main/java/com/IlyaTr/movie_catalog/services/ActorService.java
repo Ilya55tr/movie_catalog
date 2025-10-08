@@ -1,0 +1,105 @@
+package com.IlyaTr.movie_catalog.services;
+
+import com.IlyaTr.movie_catalog.dto.ActorCreateEditDto;
+import com.IlyaTr.movie_catalog.dto.ActorReadDto;
+import com.IlyaTr.movie_catalog.dto.MovieReadDto;
+import com.IlyaTr.movie_catalog.entities.Actor;
+import com.IlyaTr.movie_catalog.entities.Movie;
+import com.IlyaTr.movie_catalog.mapper.ActorMapper;
+import com.IlyaTr.movie_catalog.mapper.MappingHelper;
+import com.IlyaTr.movie_catalog.repositories.ActorRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Transactional(readOnly = true)
+public class ActorService {
+    private final ActorRepository actorRepository;
+    private final ActorMapper actorMapper;
+    private final MappingHelper mappingHelper;
+
+    @Transactional
+    ActorReadDto createActor(ActorCreateEditDto actorDto){
+        return Optional.of(actorDto)
+                .map(actorMapper::toEntity)
+                .map(actor -> {
+                    Set<Movie> movies =mappingHelper.moviesIdsToMovies(actorDto.getMoviesId());
+                    for (Movie movie: movies){
+                        movie.addActor(actor);
+                    }
+                    return actor;
+                })
+                .map(actorMapper::toReadDto)
+                .orElseThrow();
+    }
+
+    @Transactional
+    ActorReadDto updateActor(ActorCreateEditDto actorDto, Integer id){
+        return actorRepository.findById(id)
+                .map(actor -> {
+                    actorMapper.updateEntity(actorDto, actor);
+                    return actor;
+                })
+                .map(actorMapper::toReadDto)
+                .orElseThrow();
+    }
+
+    @Transactional
+    public ActorReadDto removeMoviesFromActor(Integer actorId, Set<Integer> moviesIds) {
+        Actor actor = actorRepository.findById(actorId)
+                .orElseThrow(() -> new RuntimeException("Actor not found with id: " + actorId));
+
+        Set<Movie> moviesToRemove = mappingHelper.moviesIdsToMovies(moviesIds);
+        for (Movie movie : moviesToRemove) {
+            movie.removeActor(actor);
+        }
+        return Optional.of(actorRepository.save(actor))
+                .map(actorMapper::toReadDto)
+                .orElseThrow();
+    }
+
+    @Transactional
+    public ActorReadDto addMoviesToActor(Integer actorId, Set<Integer> moviesIds) {
+        Actor actor = actorRepository.findById(actorId)
+                .orElseThrow(() -> new RuntimeException("Actor not found with id: " + actorId));
+
+        Set<Movie> moviesToAdd = mappingHelper.moviesIdsToMovies(moviesIds);
+        for (Movie movie : moviesToAdd) {
+            movie.addActor(actor);
+        }
+        return Optional.of(actorRepository.save(actor))
+                .map(actorMapper::toReadDto)
+                .orElseThrow();
+    }
+
+    boolean deleteActor(Integer id){
+        return actorRepository.findById(id)
+                .map(actor -> {
+                    actorRepository.delete(actor);
+                    actorRepository.flush();
+                    return true;
+                }).orElse(false);
+    }
+
+    ActorReadDto findById(Integer id){
+        return actorRepository
+                .findById(id)
+                .map(actorMapper::toReadDto)
+                .orElseThrow();
+    }
+
+    Set<ActorReadDto> findAll(){
+        return actorRepository
+                .findAll().stream()
+                .map(actorMapper::toReadDto)
+                .collect(Collectors.toSet());
+    }
+
+
+}
