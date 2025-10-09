@@ -2,6 +2,9 @@ package com.IlyaTr.movie_catalog.dto;
 
 import lombok.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -9,6 +12,9 @@ import lombok.*;
 @Setter
 @Builder
 public class GenreReadDto {
-    Integer id;
-    String name;
+    private Integer id;
+    private String name;
+
+    @Builder.Default
+    private Set<MovieShortDto> movies = new HashSet<>();
 }

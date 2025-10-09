@@ -13,8 +13,9 @@ import java.util.Set;
 @Setter
 @Builder
 public class ActorReadDto {
-    private String full_name;
-    private LocalDate birth_date;
+    private Integer id;
+    private String fullName;
+    private LocalDate birthDate;
     @Builder.Default
     private Set<MovieShortDto> movies = new HashSet<>();
 

@@ -24,12 +24,12 @@ public class Actor {
     @EqualsAndHashCode.Include
     private Integer id;
 
-    @Column(length = 150, nullable = false, unique = true)
-    private String full_name;
+    @Column(length = 150, nullable = false, unique = true, name = "full_name")
+    private String fullName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, name = "birth_date")
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private LocalDate birth_date;
+    private LocalDate birthDate;
 
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "actors")

@@ -38,7 +38,7 @@ public class Movie {
     private String description;
 
     @ManyToOne(optional = false)
-    @JoinColumn(nullable = false, name = "genre_id")
+    @JoinColumn(name = "genre_id")
     private Genre genre;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)

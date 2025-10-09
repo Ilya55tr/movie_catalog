@@ -13,6 +13,7 @@ import java.util.Set;
 @Setter
 @Builder
 public class MovieReadDto {
+    private Integer id;
     private String title;
     private Integer releaseYear;
     private BigDecimal rating;

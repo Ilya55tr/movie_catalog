@@ -26,7 +26,8 @@ public class GenreService {
         return Optional.of(genreDto)
                 .map(genreMapper::toEntity)
                 .map(genreRepository::save)
-                .map(genreMapper::toReadDto).orElseThrow(() -> new RuntimeException("Failed to create Genre" + genreDto.getName()));
+                .map(genreMapper::toReadDto)
+                .orElseThrow(() -> new RuntimeException("Failed to create Genre" + genreDto.getName()));
     }
 
     @Transactional

@@ -25,22 +25,23 @@ public class ActorService {
     private final MappingHelper mappingHelper;
 
     @Transactional
-    ActorReadDto createActor(ActorCreateEditDto actorDto){
+    public ActorReadDto createActor(ActorCreateEditDto actorDto){
         return Optional.of(actorDto)
                 .map(actorMapper::toEntity)
                 .map(actor -> {
-                    Set<Movie> movies =mappingHelper.moviesIdsToMovies(actorDto.getMoviesId());
+                    Set<Movie> movies =mappingHelper.moviesIdsToMovies(actorDto.getMoviesIds());
                     for (Movie movie: movies){
                         movie.addActor(actor);
                     }
                     return actor;
                 })
+                .map(actorRepository::save)
                 .map(actorMapper::toReadDto)
                 .orElseThrow();
     }
 
     @Transactional
-    ActorReadDto updateActor(ActorCreateEditDto actorDto, Integer id){
+    public ActorReadDto updateActor(ActorCreateEditDto actorDto, Integer id){
         return actorRepository.findById(id)
                 .map(actor -> {
                     actorMapper.updateEntity(actorDto, actor);
@@ -78,7 +79,8 @@ public class ActorService {
                 .orElseThrow();
     }
 
-    boolean deleteActor(Integer id){
+    @Transactional
+    public boolean deleteActor(Integer id){
         return actorRepository.findById(id)
                 .map(actor -> {
                     actorRepository.delete(actor);
@@ -87,14 +89,14 @@ public class ActorService {
                 }).orElse(false);
     }
 
-    ActorReadDto findById(Integer id){
+    public ActorReadDto findById(Integer id){
         return actorRepository
                 .findById(id)
                 .map(actorMapper::toReadDto)
                 .orElseThrow();
     }
 
-    Set<ActorReadDto> findAll(){
+    public Set<ActorReadDto> findAll(){
         return actorRepository
                 .findAll().stream()
                 .map(actorMapper::toReadDto)

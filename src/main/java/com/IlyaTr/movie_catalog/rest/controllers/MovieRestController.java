@@ -1,10 +1,12 @@
 package com.IlyaTr.movie_catalog.rest.controllers;
 
+import com.IlyaTr.movie_catalog.dto.ActorReadDto;
 import com.IlyaTr.movie_catalog.dto.MovieCreateEditDto;
 import com.IlyaTr.movie_catalog.dto.MovieReadDto;
 import com.IlyaTr.movie_catalog.entities.Actor;
 import com.IlyaTr.movie_catalog.services.MovieService;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -34,13 +36,13 @@ public class MovieRestController {
 
     @PatchMapping("/{id}/addActors")
     @ResponseStatus(HttpStatus.OK)
-    public Set<Actor> addActorsToMovie(@PathVariable Integer id,@RequestBody Set<Integer> newActorsIds){
+    public MovieReadDto addActorsToMovie(@PathVariable Integer id, @RequestBody Set<Integer> newActorsIds){
         return movieService.addActorsToMovie(id,newActorsIds);
     }
 
     @PatchMapping("/{id}/removeActors")
     @ResponseStatus(HttpStatus.OK)
-    public Set<Actor> removeActorsFromMovie(@PathVariable Integer id,@RequestBody Set<Integer> removeActorsIds){
+    public MovieReadDto removeActorsFromMovie(@PathVariable Integer id,@RequestBody Set<Integer> removeActorsIds){
         return movieService.removeActorsFromMovie(id, removeActorsIds);
     }
 

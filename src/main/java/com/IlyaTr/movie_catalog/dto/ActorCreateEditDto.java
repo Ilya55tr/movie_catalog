@@ -15,9 +15,9 @@ import java.util.Set;
 @Builder
 public class ActorCreateEditDto {
     @NotEmpty
-    private String full_name;
+    private String fullName;
     @NotNull
-    private LocalDate birth_date;
+    private LocalDate birthDate;
     @Builder.Default
-    private Set<Integer> moviesId = new HashSet<>();
+    private Set<Integer> moviesIds = new HashSet<>();
 }

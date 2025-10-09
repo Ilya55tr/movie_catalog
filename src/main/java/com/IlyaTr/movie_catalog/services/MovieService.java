@@ -1,5 +1,6 @@
 package com.IlyaTr.movie_catalog.services;
 
+import com.IlyaTr.movie_catalog.dto.ActorReadDto;
 import com.IlyaTr.movie_catalog.dto.MovieCreateEditDto;
 import com.IlyaTr.movie_catalog.dto.MovieReadDto;
 import com.IlyaTr.movie_catalog.entities.Actor;
@@ -52,17 +53,20 @@ public class MovieService {
     }
 
     @Transactional
-    public Set<Actor> addActorsToMovie(Integer movieId, Set<Integer> actorIds) {
+    public MovieReadDto addActorsToMovie(Integer movieId, Set<Integer> actorIds) {
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow();
         Set<Actor> actors = mappingHelper.actorsIdsToActors(actorIds);
         for (Actor actor : actors) {
             movie.addActor(actor);
         }
-        return movie.getActors();
+
+        return Optional.of(movieRepository.save(movie))
+                .map(movieMapper::toReadDto)
+                .orElseThrow();
     }
     @Transactional
-    public Set<Actor> removeActorsFromMovie(Integer movieId, Set<Integer> actorIds) {
+    public MovieReadDto removeActorsFromMovie(Integer movieId, Set<Integer> actorIds) {
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new RuntimeException("Movie not found with id: " + movieId));
 
@@ -70,13 +74,20 @@ public class MovieService {
         for (Actor actor : actorsToRemove) {
             movie.removeActor(actor);
         }
-        return movie.getActors();
+        return Optional.of(movieRepository.save(movie))
+                .map(movieMapper::toReadDto)
+                .orElseThrow();
     }
 
     @Transactional
     public MovieReadDto updateMovie(MovieCreateEditDto movieDto, Integer id){
         return movieRepository.findById(id)
-                .map(movie -> movieMapper.updateEntity(movieDto,movie))
+                .map(movie -> {
+
+                    movie.setGenre(mappingHelper.genreIdToGenre(movieDto.getGenreId()));
+                    movieMapper.updateEntity(movieDto,movie);
+                    return movie;
+                })
                 .map(movieRepository::save)
                 .map(movieMapper::toReadDto)
                 .orElseThrow();
