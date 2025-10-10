@@ -1,10 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org">
+    <title>create</title>
 </head>
 <body>
+<form th:action="@{/genres}" method="post" th:object="${genre}">
+    <H1>Новый жанр</H1><br>
+    <label for="genreName">Название жанра:
+        <input id="genreName" type="text" name="name" th:value="*{getName()}">
+        <button type="submit">Создать новый жанр</button>
+    </label>
+</form><br>
 
+<form th:action="@{/genres}" method="get">
+    <button type="submit">Назад</button>
+</form>
 </body>
 </html>

@@ -1,10 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Title</title>
+    <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org">
+    <title>genre</title>
 </head>
 <body>
+
+<form th:action="@{/genres/{id}/update(id=${genre.getId()})}" method="post" th:object="${genre}">
+    <H1>Жанр</H1><br>
+    <label for="genreName">Название:
+        <input id="genreName" type="text" name="name" th:value="*{getName()}">
+        <button type="submit">Изменить название</button>
+    </label><br>
+    <div th:each="movie, stat: *{getMovies()}">
+        <a th:href="@{'/movies/'+ ${movie.getId()}}" th:text="|${stat.index+1} Фильм : ${movie.getTitle()}|"> movie</a>
+        <p th:text="|Год: ${movie.getReleaseYear()}|">releaseYear</p>
+    </div>
+</form>
+<br>
+<br>
+<form th:action="@{/genres}" method="get">
+    <button type="submit">Показать все жанры</button>
+</form><br>
+<form th:action="@{/genres/{id}/delete(id=${genre.getId()})}" method="post">
+    <button type="submit">Удалить жанр</button>
+</form>
 
 </body>
 </html>
