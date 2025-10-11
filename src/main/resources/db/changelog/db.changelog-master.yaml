@@ -5,3 +5,5 @@ databaseChangeLog:
       file: db/changelog/db-changelog-1.0.0-data.sql
   - include:
       file: db/changelog/db-changelog-1.0.1.sql
+  - include:
+      file: db/changelog/db-changelog-1.0.2.sql
