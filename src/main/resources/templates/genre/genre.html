@@ -6,16 +6,23 @@
 </head>
 <body>
 
-<form th:action="@{/genres/{id}/update(id=${genre.getId()})}" method="post" th:object="${genre}">
+<form th:action="@{/genres/{id}/update(id=${genre.getId()})}" method="post" enctype="multipart/form-data" th:object="${genre}">
     <H1>Жанр</H1><br>
     <label for="genreName">Название:
         <input id="genreName" type="text" name="name" th:value="*{getName()}">
-        <button type="submit">Изменить название</button>
     </label><br>
+    <label for="image">
+        <input id="image" type="file" name="image">
+    </label>
+    <div th:if="${genre.getImage()}">
+        <img th:src="@{'/api/v1/genre/genres/'+${genre.getImage()}}" alt="Картинка жанра" width="300">
+    </div>
+    <button type="submit">Изменить жанр</button>
     <div th:each="movie, stat: *{getMovies()}">
         <a th:href="@{'/movies/'+ ${movie.getId()}}" th:text="|${stat.index+1} Фильм : ${movie.getTitle()}|"> movie</a>
         <p th:text="|Год: ${movie.getReleaseYear()}|">releaseYear</p>
-    </div>
+    </div><br>
+
 </form>
 <br>
 <br>

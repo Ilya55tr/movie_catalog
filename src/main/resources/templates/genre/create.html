@@ -5,13 +5,18 @@
     <title>create</title>
 </head>
 <body>
-<form th:action="@{/genres}" method="post" th:object="${genre}">
+<form th:action="@{/genres}" method="post" enctype="multipart/form-data" th:object="${genre}">
     <H1>Новый жанр</H1><br>
     <label for="genreName">Название жанра:
         <input id="genreName" type="text" name="name" th:value="*{getName()}">
-        <button type="submit">Создать новый жанр</button>
+
     </label>
-</form><br>
+    <label for="image">
+        <input id="image" type="file" name="image">
+    </label><br>
+    <button type="submit">Создать новый жанр</button>
+</form>
+
 
 <form th:action="@{/genres}" method="get">
     <button type="submit">Назад</button>

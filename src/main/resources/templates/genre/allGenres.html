@@ -7,6 +7,9 @@
 <body>
 <H1>Жанры:</H1>
 <div th:each="genre, stat : ${genres}">
+    <div th:if="${genre.getImage()}">
+        <img th:src="@{'/api/v1/genre/genres/'+${genre.getImage()}}" alt="Картинка жанра" width="300">
+    </div>
     <a th:href="@{'/genres/' + ${genre.getId()}}" th:text="|${stat.index+1} . ${genre.getName()}|">genre</a>
 </div>
 <br>
