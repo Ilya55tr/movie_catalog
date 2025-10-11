@@ -26,6 +26,8 @@ public class Genre {
     @Builder.Default
     private Set<Movie> movies = new HashSet<>();
 
+    private String image;
+
 
 
 }

@@ -11,4 +11,10 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
-
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+app:
+  image:
+    bucket: F:\java_projects\movie_catalog\images

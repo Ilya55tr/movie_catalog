@@ -4,6 +4,7 @@ import com.IlyaTr.movie_catalog.dto.GenreCreateEditDto;
 import com.IlyaTr.movie_catalog.dto.GenreReadDto;
 import com.IlyaTr.movie_catalog.entities.Genre;
 import com.IlyaTr.movie_catalog.mapper.GenreMapper;
+import com.IlyaTr.movie_catalog.mapper.MappingHelper;
 import com.IlyaTr.movie_catalog.repositories.GenreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,11 +21,14 @@ import java.util.stream.Collectors;
 public class GenreService {
     private final GenreRepository genreRepository;
     private final GenreMapper genreMapper;
+    private final MappingHelper mappingHelper;
+
 
     @Transactional
     public GenreReadDto createGenre(GenreCreateEditDto genreDto){
         return Optional.of(genreDto)
                 .map(genreMapper::toEntity)
+                .map(genre -> mappingHelper.setImage(genre, genreDto))
                 .map(genreRepository::save)
                 .map(genreMapper::toReadDto)
                 .orElseThrow(() -> new RuntimeException("Failed to create Genre" + genreDto.getName()));
@@ -33,7 +37,11 @@ public class GenreService {
     @Transactional
     public GenreReadDto updateGenre(GenreCreateEditDto genreDto, Integer id){
         return  genreRepository.findById(id)
-                .map(genre -> genreMapper.updateEntity(genreDto,genre))
+                .map(genre -> {
+                    genreMapper.updateEntity(genreDto,genre);
+                    mappingHelper.setImage(genre, genreDto);
+                    return genre;
+                })
                 .map(genreRepository::save)
                 .map(genreMapper::toReadDto).orElseThrow(() -> new RuntimeException("Failed to update Genre id:" + id));
     }
@@ -47,6 +55,8 @@ public class GenreService {
                     return true;
                 }).orElse(false);
     }
+
+
 
      public GenreReadDto findById(Integer id){
         return genreRepository.findById(id)

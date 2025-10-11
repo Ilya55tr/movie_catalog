@@ -14,6 +14,7 @@ import java.util.Set;
 public class GenreReadDto {
     private Integer id;
     private String name;
+    private String image;
 
     @Builder.Default
     private Set<MovieShortDto> movies = new HashSet<>();
