@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org">
-    <title>Жанр</title>
+    <title>Актер</title>
     <style>
         * {
             margin: 0;
@@ -66,9 +66,9 @@
             padding-bottom: 10px;
         }
 
-        .genre-image {
+        .actor-image {
             width: 100%;
-            max-width: 500px;
+            max-width: 400px;
             height: auto;
             border-radius: 15px;
             margin: 20px auto;
@@ -89,7 +89,9 @@
         }
 
         input[type="text"],
-        input[type="file"] {
+        input[type="date"],
+        input[type="file"],
+        select {
             width: 100%;
             padding: 12px 20px;
             border: 2px solid #e0e0e0;
@@ -99,10 +101,16 @@
             background: white;
         }
 
-        input[type="text"]:focus {
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        select:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        select {
+            height: 150px;
         }
 
         .movie-card {
@@ -150,30 +158,42 @@
 
         .delete-button {
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
-            margin-top: 20px;
+        }
+
+        .add-remove-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+
+        .section-header {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
         }
     </style>
 </head>
 <body>
 <div class="container">
     <div class="nav-buttons">
-        <form th:action="@{/genres}" method="get" style="display: inline;">
-            <button type="submit">⬅️ Назад</button>
-        </form>
-        <form th:action="@{/actors}" method="get" style="display: inline;">
-            <button type="submit">⭐ Показать всех актеров</button>
-        </form>
         <form th:action="@{/movies}" method="get" style="display: inline;">
             <button type="submit">🎬 Показать все фильмы</button>
         </form>
+        <form th:action="@{/genres}" method="get" style="display: inline;">
+            <button type="submit">🎭 Показать все жанры</button>
+        </form>
+        <form th:action="@{/actors}" method="get" style="display: inline;">
+            <button type="submit">⬅️ Назад</button>
+        </form>
     </div>
 
-    <form th:action="@{/genres/{id}/update(id=${genre.getId()})}" method="post" enctype="multipart/form-data" th:object="${genre}">
-        <h1>🎭 Жанр</h1>
+    <form th:action="@{/actors/{id}/update(id=${actor.getId()})}" method="post" enctype="multipart/form-data" th:object="${actor}">
+        <h1>⭐ Актер</h1>
 
-        <div class="form-group">
-            <label for="genreName">Название:</label>
-            <input id="genreName" type="text" name="name" th:value="*{getName()}">
+        <div th:if="${actor.getImage()}">
+            <img th:src="@{'/api/v1/actor/actors/'+${actor.getImage()}}" alt="Картинка актера" class="actor-image">
         </div>
 
         <div class="form-group">
@@ -181,26 +201,62 @@
             <input id="image" type="file" name="image">
         </div>
 
-        <div th:if="${genre.getImage()}">
-            <img th:src="@{'/api/v1/genre/genres/'+${genre.getImage()}}" alt="Картинка жанра" class="genre-image">
+        <div class="form-group">
+            <label for="actorName">Имя:</label>
+            <input id="actorName" type="text" name="fullName" th:value="*{getFullName()}">
         </div>
 
-        <button type="submit">💾 Изменить жанр</button>
+        <div class="form-group">
+            <label for="birthDate">Дата рождения:</label>
+            <input id="birthDate" type="date" name="birthDate" th:value="*{getBirthDate()}">
+        </div>
 
-        <h3>🎬 Фильмы этого жанра:</h3>
+        <button type="submit">💾 Изменить актера</button>
+
+        <h3>🎬 Фильмы в которых снимался актер:</h3>
         <div th:each="movie, stat: *{getMovies()}" class="movie-card">
             <div th:if="${movie.getImage()}">
                 <img th:src="@{'/api/v1/movie/movies/'+${movie.getImage()}}" alt="Картинка фильма" class="movie-card-image">
             </div>
             <div class="movie-info">
-                <a th:href="@{'/movies/'+ ${movie.getId()}}" th:text="|${stat.index+1}. ${movie.getTitle()}|">movie</a>
-                <p th:text="|Год выпуска: ${movie.getReleaseYear()}|">releaseYear</p>
+                <a th:href="@{'/movies/'+ ${movie.getId()}}" th:text="|${stat.index+1}. ${movie.getTitle()}|">фильм</a>
+                <p th:text="|Год выпуска: ${movie.getReleaseYear()}|">год выпуска</p>
             </div>
         </div>
     </form>
 
-    <form th:action="@{/genres/{id}/delete(id=${genre.getId()})}" method="post">
-        <button type="submit" class="delete-button">🗑️ Удалить жанр</button>
+    <div class="add-remove-section">
+        <form th:action="@{/actors/{id}/update/addMovies(id=${actor.getId()})}" method="post">
+            <div class="form-group">
+                <label for="moviesToAdd" class="section-header">➕ Выберите фильмы для добавления:</label>
+                <select id="moviesToAdd" multiple name="moviesIds">
+                    <option th:each="movie : ${movies}"
+                            th:value="${movie.getId()}"
+                            th:text="${movie.getTitle()}">фильм
+                    </option>
+                </select>
+            </div>
+            <button type="submit">➕ Добавить</button>
+        </form>
+    </div>
+
+    <div class="add-remove-section">
+        <form th:action="@{/actors/{id}/update/removeMovies(id=${actor.getId()})}" method="post">
+            <div class="form-group">
+                <label for="moviesToRemove" class="section-header">➖ Выберите фильмы для удаления:</label>
+                <select id="moviesToRemove" multiple name="moviesIds">
+                    <option th:each="movie : ${actor.getMovies()}"
+                            th:value="${movie.getId()}"
+                            th:text="${movie.getTitle()}">фильм
+                    </option>
+                </select>
+            </div>
+            <button type="submit">➖ Удалить</button>
+        </form>
+    </div>
+
+    <form th:action="@{/actors/{id}/delete(id = ${actor.getId()})}" method="post">
+        <button type="submit" class="delete-button">🗑️ Удалить актера</button>
     </form>
 </div>
 </body>

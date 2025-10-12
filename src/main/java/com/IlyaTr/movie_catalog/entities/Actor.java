@@ -35,4 +35,6 @@ public class Actor {
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "actors")
     @Builder.Default
     private Set<Movie> movies = new HashSet<>();
+
+    private String image;
 }

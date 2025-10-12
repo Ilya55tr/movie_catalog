@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org">
-    <title>Все жанры</title>
+    <title>Все фильмы</title>
     <style>
         * {
             margin: 0;
@@ -71,38 +71,39 @@
             background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
         }
 
-        .genres-grid {
+        .movies-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 30px;
             margin-top: 30px;
         }
 
-        .genre-card {
+        .movie-card {
             background: white;
             border-radius: 15px;
             overflow: hidden;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
+            position: relative;
         }
 
-        .genre-card:hover {
+        .movie-card:hover {
             transform: translateY(-10px);
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
         }
 
-        .genre-image {
+        .movie-image {
             width: 100%;
-            height: 250px;
+            height: 350px;
             object-fit: cover;
             display: block;
         }
 
-        .genre-info {
+        .movie-info {
             padding: 20px;
         }
 
-        .genre-number {
+        .movie-number {
             display: inline-block;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
@@ -113,7 +114,7 @@
             margin-bottom: 10px;
         }
 
-        .genre-card a {
+        .movie-card a {
             text-decoration: none;
             color: #333;
             font-size: 1.2em;
@@ -123,13 +124,13 @@
             transition: color 0.3s ease;
         }
 
-        .genre-card a:hover {
+        .movie-card a:hover {
             color: #667eea;
         }
 
         .no-image {
             width: 100%;
-            height: 250px;
+            height: 350px;
             background: linear-gradient(135deg, #e0e0e0 0%, #f5f5f5 100%);
             display: flex;
             align-items: center;
@@ -142,13 +143,13 @@
 <body>
 <div class="container">
     <div class="header">
-        <h1>🎭 Жанры</h1>
+        <h1>🎬 Фильмы</h1>
         <div class="nav-buttons">
-            <form th:action="@{/genres/create}" method="get" style="display: inline;">
-                <button type="submit" class="add-button">➕ Добавить новый жанр</button>
+            <form th:action="@{/movies/create}" method="get" style="display: inline;">
+                <button type="submit" class="add-button">➕ Добавить новый фильм</button>
             </form>
-            <form th:action="@{/movies}" method="get" style="display: inline;">
-                <button type="submit">🎬 Показать все фильмы</button>
+            <form th:action="@{/genres}" method="get" style="display: inline;">
+                <button type="submit">🎭 Показать все жанры</button>
             </form>
             <form th:action="@{/actors}" method="get" style="display: inline;">
                 <button type="submit">⭐ Показать всех актеров</button>
@@ -156,17 +157,17 @@
         </div>
     </div>
 
-    <div class="genres-grid">
-        <div th:each="genre, stat : ${genres}" class="genre-card">
-            <div th:if="${genre.getImage()}">
-                <img th:src="@{'/api/v1/genre/genres/'+${genre.getImage()}}" alt="Картинка жанра" class="genre-image">
+    <div class="movies-grid">
+        <div th:each="movie, stat : ${movies}" class="movie-card">
+            <div th:if="${movie.getImage()}">
+                <img th:src="@{'/api/v1/movie/movies/'+${movie.getImage()}}" alt="Картинка фильма" class="movie-image">
             </div>
-            <div th:unless="${genre.getImage()}" class="no-image">
-                🎭 Нет изображения
+            <div th:unless="${movie.getImage()}" class="no-image">
+                🎬 Нет изображения
             </div>
-            <div class="genre-info">
-                <span class="genre-number" th:text="${stat.index+1}">1</span>
-                <a th:href="@{'/genres/' + ${genre.getId()}}" th:text="${genre.getName()}">genre</a>
+            <div class="movie-info">
+                <span class="movie-number" th:text="${stat.index+1}">1</span>
+                <a th:href="@{'/movies/' + ${movie.getId()}}" th:text="${movie.getTitle()}">movie</a>
             </div>
         </div>
     </div>

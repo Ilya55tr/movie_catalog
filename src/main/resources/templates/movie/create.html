@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org">
+    <title>Создать фильм</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 700px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        select[multiple] {
+            height: 150px;
+        }
+
+        select:not([multiple]) {
+            height: 50px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .back-button {
+            background: linear-gradient(135deg, #a8a8a8 0%, #7a7a7a 100%) !important;
+        }
+
+        .submit-button {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+            margin-bottom: 15px;
+        }
+
+        .button-group {
+            margin-top: 30px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            cursor: pointer;
+        }
+
+        .help-text {
+            font-size: 13px;
+            color: #666;
+            margin-top: 5px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <form th:action="@{/movies}" method="post" enctype="multipart/form-data" th:object="${movie}">
+        <h1>🎬 Новый фильм</h1>
+
+        <div class="form-group">
+            <label for="title">Название фильма:</label>
+            <input id="title" type="text" name="title" th:value="*{getTitle()}" placeholder="Введите название фильма" required>
+        </div>
+
+        <div class="form-group">
+            <label for="releaseYear">Год выпуска:</label>
+            <input id="releaseYear" type="number" name="releaseYear" th:value="*{getReleaseYear()}" placeholder="2024" min="1800" max="2100" required>
+        </div>
+
+        <div class="form-group">
+            <label for="rating">Рейтинг:</label>
+            <input id="rating" type="text" name="rating" th:value="*{getRating()}" placeholder="8.5">
+            <div class="help-text">Например: 8.5, 9.0, 7.2</div>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Описание:</label>
+            <input id="description" type="text" name="description" th:value="*{getDescription()}" placeholder="Краткое описание фильма">
+        </div>
+
+        <div class="form-group">
+            <label for="image">Изображение постера:</label>
+            <div class="file-input-wrapper">
+                <input id="image" type="file" name="image" accept="image/*">
+            </div>
+            <div class="help-text">Загрузите изображение для постера фильма</div>
+        </div>
+
+        <div class="form-group">
+            <label for="genre">Выберите жанр:</label>
+            <select id="genre" th:field="*{genreId}" required>
+                <option value="">-- Выберите жанр --</option>
+                <option
+                        th:each="genre: ${genres}"
+                        th:value="${genre.getId()}"
+                        th:selected="${genre.getId() == movie.getGenreId()}"
+                        th:text="${genre.getName()}">Жанр
+                </option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="actors">Выберите актеров:</label>
+            <select id="actors" multiple th:field="*{actorsIds}">
+                <option th:each="actor : ${actors}"
+                        th:value="${actor.getId()}"
+                        th:text="${actor.getFullName()}">
+                </option>
+            </select>
+            <div class="help-text">Удерживайте Ctrl (Cmd на Mac) для выбора нескольких актеров</div>
+        </div>
+
+        <div class="button-group">
+            <button type="submit" class="submit-button">➕ Добавить фильм</button>
+        </div>
+    </form>
+
+    <form th:action="@{/movies}" method="get">
+        <button type="submit" class="back-button">⬅️ Назад</button>
+    </form>
+</div>
+</body>
+</html>

@@ -18,5 +18,5 @@ public class ActorReadDto {
     private LocalDate birthDate;
     @Builder.Default
     private Set<MovieShortDto> movies = new HashSet<>();
-
+    private String image;
 }

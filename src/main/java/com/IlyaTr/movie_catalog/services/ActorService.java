@@ -2,11 +2,10 @@ package com.IlyaTr.movie_catalog.services;
 
 import com.IlyaTr.movie_catalog.dto.ActorCreateEditDto;
 import com.IlyaTr.movie_catalog.dto.ActorReadDto;
-import com.IlyaTr.movie_catalog.dto.MovieReadDto;
 import com.IlyaTr.movie_catalog.entities.Actor;
 import com.IlyaTr.movie_catalog.entities.Movie;
 import com.IlyaTr.movie_catalog.mapper.ActorMapper;
-import com.IlyaTr.movie_catalog.mapper.MappingHelper;
+import com.IlyaTr.movie_catalog.mapper.MappingHelperImpl;
 import com.IlyaTr.movie_catalog.repositories.ActorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -22,28 +21,30 @@ import java.util.stream.Collectors;
 public class ActorService {
     private final ActorRepository actorRepository;
     private final ActorMapper actorMapper;
-    private final MappingHelper mappingHelper;
+    private final MappingHelperImpl mappingHelperImpl;
 
     @Transactional
-    public ActorReadDto createActor(ActorCreateEditDto actorDto){
+    public ActorReadDto createActor(ActorCreateEditDto actorDto) {
         return Optional.of(actorDto)
                 .map(actorMapper::toEntity)
                 .map(actor -> {
-                    Set<Movie> movies =mappingHelper.moviesIdsToMovies(actorDto.getMoviesIds());
-                    for (Movie movie: movies){
+                    Set<Movie> movies = mappingHelperImpl.moviesIdsToMovies(actorDto.getMoviesIds());
+                    for (Movie movie : movies) {
                         movie.addActor(actor);
                     }
                     return actor;
                 })
+                .map(actor -> mappingHelperImpl.setImage(actor, actorDto, "actors"))
                 .map(actorRepository::save)
                 .map(actorMapper::toReadDto)
                 .orElseThrow();
     }
 
     @Transactional
-    public ActorReadDto updateActor(ActorCreateEditDto actorDto, Integer id){
+    public ActorReadDto updateActor(ActorCreateEditDto actorDto, Integer id) {
         return actorRepository.findById(id)
                 .map(actor -> {
+                    mappingHelperImpl.setImage(actor, actorDto, "actors");
                     actorMapper.updateEntity(actorDto, actor);
                     return actor;
                 })
@@ -56,7 +57,7 @@ public class ActorService {
         Actor actor = actorRepository.findById(actorId)
                 .orElseThrow(() -> new RuntimeException("Actor not found with id: " + actorId));
 
-        Set<Movie> moviesToRemove = mappingHelper.moviesIdsToMovies(moviesIds);
+        Set<Movie> moviesToRemove = mappingHelperImpl.moviesIdsToMovies(moviesIds);
         for (Movie movie : moviesToRemove) {
             movie.removeActor(actor);
         }
@@ -70,7 +71,7 @@ public class ActorService {
         Actor actor = actorRepository.findById(actorId)
                 .orElseThrow(() -> new RuntimeException("Actor not found with id: " + actorId));
 
-        Set<Movie> moviesToAdd = mappingHelper.moviesIdsToMovies(moviesIds);
+        Set<Movie> moviesToAdd = mappingHelperImpl.moviesIdsToMovies(moviesIds);
         for (Movie movie : moviesToAdd) {
             movie.addActor(actor);
         }
@@ -80,7 +81,7 @@ public class ActorService {
     }
 
     @Transactional
-    public boolean deleteActor(Integer id){
+    public boolean deleteActor(Integer id) {
         return actorRepository.findById(id)
                 .map(actor -> {
                     actorRepository.delete(actor);
@@ -89,14 +90,14 @@ public class ActorService {
                 }).orElse(false);
     }
 
-    public ActorReadDto findById(Integer id){
+    public ActorReadDto findById(Integer id) {
         return actorRepository
                 .findById(id)
                 .map(actorMapper::toReadDto)
                 .orElseThrow();
     }
 
-    public Set<ActorReadDto> findAll(){
+    public Set<ActorReadDto> findAll() {
         return actorRepository
                 .findAll().stream()
                 .map(actorMapper::toReadDto)

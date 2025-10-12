@@ -19,6 +19,7 @@ public class MovieReadDto {
     private BigDecimal rating;
     private String description;
     private GenreReadDto genre;
+    private String image;
     @Builder.Default
     private Set<ActorReadDto> actors = new HashSet<>();
 }

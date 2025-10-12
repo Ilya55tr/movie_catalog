@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -31,5 +32,5 @@ public class MovieCreateEditDto {
     private Integer genreId;
     @Builder.Default
     private Set<Integer> actorsIds = new HashSet<>();
-
+    private MultipartFile image;
 }

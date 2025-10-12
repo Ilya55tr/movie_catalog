@@ -24,6 +24,7 @@ public class GenreRestController {
     private final ImageService imageService;
 
     @GetMapping("/{subDir}/{fileName:.+}")
+    @ResponseStatus(HttpStatus.OK)
     public Resource getImage(@PathVariable String subDir
             , @PathVariable String fileName){
         Resource image = imageService.load(fileName,subDir);

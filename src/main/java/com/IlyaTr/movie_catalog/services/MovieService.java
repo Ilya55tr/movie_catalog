@@ -1,18 +1,16 @@
 package com.IlyaTr.movie_catalog.services;
 
-import com.IlyaTr.movie_catalog.dto.ActorReadDto;
 import com.IlyaTr.movie_catalog.dto.MovieCreateEditDto;
 import com.IlyaTr.movie_catalog.dto.MovieReadDto;
 import com.IlyaTr.movie_catalog.entities.Actor;
 import com.IlyaTr.movie_catalog.entities.Movie;
-import com.IlyaTr.movie_catalog.mapper.MappingHelper;
+import com.IlyaTr.movie_catalog.mapper.MappingHelperImpl;
 import com.IlyaTr.movie_catalog.mapper.MovieMapper;
 import com.IlyaTr.movie_catalog.repositories.MovieRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -23,20 +21,21 @@ import java.util.stream.Collectors;
 public class MovieService {
     private final MovieRepository movieRepository;
     private final MovieMapper movieMapper;
-    private final MappingHelper mappingHelper;
+    private final MappingHelperImpl mappingHelperImpl;
 
     @Transactional
     public MovieReadDto createMovie(MovieCreateEditDto movieDto){
         return Optional.of(movieDto)
                 .map(movieMapper::toEntity)
                 .map(movie -> {
-                    Set<Actor> actorSet = mappingHelper.actorsIdsToActors(movieDto.getActorsIds());
+                    Set<Actor> actorSet = mappingHelperImpl.actorsIdsToActors(movieDto.getActorsIds());
                     for (Actor actor: actorSet){
                         movie.addActor(actor);
                     }
-                    movie.setGenre(mappingHelper.genreIdToGenre(movieDto.getGenreId()));
+                    movie.setGenre(mappingHelperImpl.genreIdToGenre(movieDto.getGenreId()));
                     return movie;
                 })
+                .map(movie -> mappingHelperImpl.setImage(movie, movieDto, "movies"))
                 .map(movieRepository::save)
                 .map(movieMapper::toReadDto)
                 .orElseThrow();
@@ -56,7 +55,7 @@ public class MovieService {
     public MovieReadDto addActorsToMovie(Integer movieId, Set<Integer> actorIds) {
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow();
-        Set<Actor> actors = mappingHelper.actorsIdsToActors(actorIds);
+        Set<Actor> actors = mappingHelperImpl.actorsIdsToActors(actorIds);
         for (Actor actor : actors) {
             movie.addActor(actor);
         }
@@ -70,7 +69,7 @@ public class MovieService {
         Movie movie = movieRepository.findById(movieId)
                 .orElseThrow(() -> new RuntimeException("Movie not found with id: " + movieId));
 
-        Set<Actor> actorsToRemove = mappingHelper.actorsIdsToActors(actorIds);
+        Set<Actor> actorsToRemove = mappingHelperImpl.actorsIdsToActors(actorIds);
         for (Actor actor : actorsToRemove) {
             movie.removeActor(actor);
         }
@@ -84,10 +83,11 @@ public class MovieService {
         return movieRepository.findById(id)
                 .map(movie -> {
 
-                    movie.setGenre(mappingHelper.genreIdToGenre(movieDto.getGenreId()));
+                    movie.setGenre(mappingHelperImpl.genreIdToGenre(movieDto.getGenreId()));
                     movieMapper.updateEntity(movieDto,movie);
                     return movie;
                 })
+                .map(movie -> mappingHelperImpl.setImage(movie, movieDto, "movies"))
                 .map(movieRepository::save)
                 .map(movieMapper::toReadDto)
                 .orElseThrow();

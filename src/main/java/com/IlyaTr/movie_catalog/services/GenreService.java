@@ -2,15 +2,13 @@ package com.IlyaTr.movie_catalog.services;
 
 import com.IlyaTr.movie_catalog.dto.GenreCreateEditDto;
 import com.IlyaTr.movie_catalog.dto.GenreReadDto;
-import com.IlyaTr.movie_catalog.entities.Genre;
 import com.IlyaTr.movie_catalog.mapper.GenreMapper;
-import com.IlyaTr.movie_catalog.mapper.MappingHelper;
+import com.IlyaTr.movie_catalog.mapper.MappingHelperImpl;
 import com.IlyaTr.movie_catalog.repositories.GenreRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -21,14 +19,14 @@ import java.util.stream.Collectors;
 public class GenreService {
     private final GenreRepository genreRepository;
     private final GenreMapper genreMapper;
-    private final MappingHelper mappingHelper;
+    private final MappingHelperImpl mappingHelperImpl;
 
 
     @Transactional
     public GenreReadDto createGenre(GenreCreateEditDto genreDto){
         return Optional.of(genreDto)
                 .map(genreMapper::toEntity)
-                .map(genre -> mappingHelper.setImage(genre, genreDto))
+                .map(genre -> mappingHelperImpl.setImage(genre, genreDto, "genres"))
                 .map(genreRepository::save)
                 .map(genreMapper::toReadDto)
                 .orElseThrow(() -> new RuntimeException("Failed to create Genre" + genreDto.getName()));
@@ -39,7 +37,7 @@ public class GenreService {
         return  genreRepository.findById(id)
                 .map(genre -> {
                     genreMapper.updateEntity(genreDto,genre);
-                    mappingHelper.setImage(genre, genreDto);
+                    mappingHelperImpl.setImage(genre, genreDto, "genres");
                     return genre;
                 })
                 .map(genreRepository::save)

@@ -2,6 +2,7 @@ package com.IlyaTr.movie_catalog.dto;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -20,4 +21,6 @@ public class ActorCreateEditDto {
     private LocalDate birthDate;
     @Builder.Default
     private Set<Integer> moviesIds = new HashSet<>();
+
+    private MultipartFile image;
 }

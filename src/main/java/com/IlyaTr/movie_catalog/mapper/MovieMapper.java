@@ -11,6 +11,7 @@ public interface MovieMapper {
 
     @Mapping(target = "genre", ignore = true)
     @Mapping(target = "actors", ignore = true)
+    @Mapping(target = "image", ignore = true)
     Movie toEntity(MovieCreateEditDto movieDto);
 
     MovieReadDto toReadDto(Movie movie);
@@ -20,6 +21,7 @@ public interface MovieMapper {
     @Mapping(target = "genre", ignore = true)
     @Mapping( target = "actors", ignore = true)
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "image", ignore = true)
     Movie updateEntity(MovieCreateEditDto movieDto, @MappingTarget Movie movie);
 
 }

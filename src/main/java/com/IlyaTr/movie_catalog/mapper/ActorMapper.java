@@ -10,11 +10,14 @@ public interface ActorMapper {
 
     ActorReadDto toReadDto(Actor actor);
 
+
     @Mapping(target = "movies", ignore = true)
+    @Mapping(target = "image", ignore = true)
     Actor toEntity(ActorCreateEditDto actorDto);
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "movies", ignore = true)
+    @Mapping(target = "image", ignore = true)
     Actor updateEntity(ActorCreateEditDto actorDto, @MappingTarget Actor actor);
 
 }

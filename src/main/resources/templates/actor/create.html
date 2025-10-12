@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Создать жанр</title>
+    <title>Создать актера</title>
     <style>
         * {
             margin: 0;
@@ -51,7 +51,9 @@
         }
 
         input[type="text"],
-        input[type="file"] {
+        input[type="date"],
+        input[type="file"],
+        select {
             width: 100%;
             padding: 12px 20px;
             border: 2px solid #e0e0e0;
@@ -62,10 +64,16 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        input[type="text"]:focus {
+        input[type="text"]:focus,
+        input[type="date"]:focus,
+        select:focus {
             outline: none;
             border-color: #667eea;
             box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        select[multiple] {
+            height: 150px;
         }
 
         button {
@@ -107,37 +115,46 @@
             margin-top: 5px;
             font-style: italic;
         }
-
-        .icon {
-            font-size: 4em;
-            text-align: center;
-            margin-bottom: 20px;
-        }
     </style>
 </head>
 <body xmlns:th="http://www.thymeleaf.org">
 <div class="container">
-    <form th:action="@{/genres}" method="post" enctype="multipart/form-data" th:object="${genre}">
-        <div class="icon">🎭</div>
-        <h1>Новый жанр</h1>
+    <form th:action="@{/actors}" method="post" enctype="multipart/form-data" th:object="${actor}">
+        <h1>⭐ Новый актер</h1>
 
         <div class="form-group">
-            <label for="genreName">Название жанра:</label>
-            <input id="genreName" type="text" name="name" th:value="*{getName()}" placeholder="Введите название жанра (например: Боевик, Драма, Комедия)" required>
+            <label for="image">Фотография актера:</label>
+            <input id="image" type="file" name="image" accept="image/*">
+            <div class="help-text">Загрузите фотографию актера</div>
         </div>
 
         <div class="form-group">
-            <label for="image">Изображение жанра:</label>
-            <input id="image" type="file" name="image" accept="image/*">
-            <div class="help-text">Загрузите изображение, представляющее этот жанр</div>
+            <label for="actorName">Полное имя:</label>
+            <input id="actorName" type="text" name="fullName" th:value="*{getFullName()}" placeholder="Введите полное имя актера" required>
+        </div>
+
+        <div class="form-group">
+            <label for="birthDate">Дата рождения:</label>
+            <input id="birthDate" type="date" name="birthDate" th:value="*{getBirthDate()}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="movies">Выберите фильмы:</label>
+            <select id="movies" multiple th:field="*{moviesIds}">
+                <option th:each="movie : ${movies}"
+                        th:value="${movie.getId()}"
+                        th:text="${movie.getTitle()}">фильм
+                </option>
+            </select>
+            <div class="help-text">Удерживайте Ctrl (Cmd на Mac) для выбора нескольких фильмов</div>
         </div>
 
         <div class="button-group">
-            <button type="submit" class="submit-button">➕ Создать новый жанр</button>
+            <button type="submit" class="submit-button">➕ Добавить актера</button>
         </div>
     </form>
 
-    <form th:action="@{/genres}" method="get">
+    <form th:action="@{/actors}" method="get">
         <button type="submit" class="back-button">⬅️ Назад</button>
     </form>
 </div>

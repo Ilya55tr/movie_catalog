@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org">
+    <title>Фильм</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        h3 {
+            color: #764ba2;
+            font-size: 1.5em;
+            margin: 30px 0 20px 0;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .movie-image {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 15px;
+            margin: 20px auto;
+            display: block;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 16px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 12px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        select {
+            height: 150px;
+        }
+
+        .actor-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .actor-card:hover {
+            transform: translateX(10px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .actor-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 50%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .actor-info a {
+            text-decoration: none;
+            color: #667eea;
+            font-weight: 600;
+            font-size: 18px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .actor-info a:hover {
+            color: #764ba2;
+        }
+
+        .actor-info p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .delete-button {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+        }
+
+        .add-remove-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+        }
+
+        .section-header {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="nav-buttons">
+        <form th:action="@{/genres}" method="get" style="display: inline;">
+            <button type="submit">🎭 Показать все жанры</button>
+        </form>
+        <form th:action="@{/actors}" method="get" style="display: inline;">
+            <button type="submit">⭐ Показать всех актеров</button>
+        </form>
+        <form th:action="@{/movies}" method="get" style="display: inline;">
+            <button type="submit">⬅️ Назад</button>
+        </form>
+    </div>
+
+    <form th:action="@{/movies/{id}/update(id=${movie.getId()})}" method="post" enctype="multipart/form-data" th:object="${movie}">
+        <h1>🎬 Фильм</h1>
+
+        <div class="form-group">
+            <label for="movieName">Название:</label>
+            <input id="movieName" type="text" name="title" th:value="*{getTitle()}">
+        </div>
+
+        <div class="form-group">
+            <label for="image">Изображение:</label>
+            <input id="image" type="file" name="image">
+        </div>
+
+        <div th:if="${movie.getImage()}">
+            <img th:src="@{'/api/v1/movie/movies/'+${movie.getImage()}}" alt="Картинка фильма" class="movie-image">
+        </div>
+
+        <div class="form-group">
+            <label for="releaseYear">Год выпуска:</label>
+            <input id="releaseYear" type="number" name="releaseYear" th:value="*{getReleaseYear()}">
+        </div>
+
+        <div class="form-group">
+            <label for="rating">Рейтинг:</label>
+            <input id="rating" type="text" name="rating" th:value="*{getRating()}">
+        </div>
+
+        <div class="form-group">
+            <label for="description">Описание:</label>
+            <input id="description" type="text" name="description" th:value="*{getDescription()}">
+        </div>
+
+        <div class="form-group">
+            <label for="genre">Выберите жанр:</label>
+            <select id="genre" name="genreId">
+                <option
+                        th:each="genre: ${genres}"
+                        th:value="${genre.getId()}"
+                        th:selected="${genre.getId() == movie.getGenre().getId()}"
+                        th:text="${genre.getName()}">Жанр
+                </option>
+            </select>
+        </div>
+
+        <button type="submit">💾 Изменить фильм</button>
+
+        <h3>⭐ Актеры фильма:</h3>
+        <div th:each="actor, stat: *{getActors()}" class="actor-card">
+            <div th:if="${actor.getImage()}">
+                <img th:src="@{'/api/v1/actor/actors/'+${actor.getImage()}}" alt="Картинка актера" class="actor-image">
+            </div>
+            <div class="actor-info">
+                <a th:href="@{'/actors/'+ ${actor.getId()}}" th:text="|${stat.index+1}. ${actor.getFullName()}|">актер</a>
+                <p th:text="|Дата рождения: ${actor.getBirthDate()}|">birthdate</p>
+            </div>
+        </div>
+    </form>
+
+    <div class="add-remove-section">
+        <form th:action="@{/movies/{id}/update/addActors(id=${movie.getId()})}" method="post">
+            <div class="form-group">
+                <label for="actorsToAdd" class="section-header">➕ Выберите актеров для добавления:</label>
+                <select id="actorsToAdd" multiple name="actorsIds">
+                    <option th:each="actor : ${actors}"
+                            th:value="${actor.getId()}"
+                            th:text="${actor.getFullName()}">имя
+                    </option>
+                </select>
+            </div>
+            <button type="submit">➕ Добавить</button>
+        </form>
+    </div>
+
+    <div class="add-remove-section">
+        <form th:action="@{/movies/{id}/update/removeActors(id=${movie.getId()})}" method="post">
+            <div class="form-group">
+                <label for="actorsToRemove" class="section-header">➖ Выберите актеров для удаления:</label>
+                <select id="actorsToRemove" multiple name="actorsIds">
+                    <option th:each="actor : ${movie.getActors()}"
+                            th:value="${actor.getId()}"
+                            th:text="${actor.getFullName()}">имя
+                    </option>
+                </select>
+            </div>
+            <button type="submit">➖ Удалить</button>
+        </form>
+    </div>
+
+    <form th:action="@{/movies/{id}/delete(id=${movie.getId()})}" method="post">
+        <button type="submit" class="delete-button">🗑️ Удалить фильм</button>
+    </form>
+</div>
+</body>
+</html>

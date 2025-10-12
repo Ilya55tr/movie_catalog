@@ -18,7 +18,6 @@ import java.util.Set;
 @ToString(exclude = "actors")
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
-
 public class Movie {
 
     @Id
@@ -59,5 +58,7 @@ public class Movie {
         actors.remove(actor);
         actor.getMovies().remove(this);
     }
+
+    private String image;
 
 }
