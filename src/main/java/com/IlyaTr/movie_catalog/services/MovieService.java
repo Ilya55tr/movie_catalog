@@ -2,6 +2,7 @@ package com.IlyaTr.movie_catalog.services;
 
 import com.IlyaTr.movie_catalog.dto.MovieCreateEditDto;
 import com.IlyaTr.movie_catalog.dto.MovieReadDto;
+import com.IlyaTr.movie_catalog.dto.filter.MovieFilter;
 import com.IlyaTr.movie_catalog.entities.Actor;
 import com.IlyaTr.movie_catalog.entities.Movie;
 import com.IlyaTr.movie_catalog.mapper.MappingHelperImpl;
@@ -106,6 +107,15 @@ public class MovieService {
                 .map(movieMapper::toReadDto)
                 .collect(Collectors.toSet());
     }
+
+//    public Set<MovieReadDto> findAll(MovieFilter filter){
+//        return movieRepository
+//                .findAllByFilter(filter)
+//                .stream()
+//                .map(movieMapper::toReadDto)
+//                .collect(Collectors.toSet());
+//    }
+
 
 
 }

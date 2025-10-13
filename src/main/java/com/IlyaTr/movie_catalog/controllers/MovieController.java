@@ -2,6 +2,7 @@ package com.IlyaTr.movie_catalog.controllers;
 
 import com.IlyaTr.movie_catalog.dto.MovieCreateEditDto;
 import com.IlyaTr.movie_catalog.dto.MovieReadDto;
+import com.IlyaTr.movie_catalog.dto.filter.MovieFilter;
 import com.IlyaTr.movie_catalog.services.ActorService;
 import com.IlyaTr.movie_catalog.services.GenreService;
 import com.IlyaTr.movie_catalog.services.MovieService;
@@ -65,8 +66,9 @@ public class MovieController {
     }
 
     @GetMapping
-    public String getAll(Model model){
+    public String getAll(Model model, MovieFilter filter){
         model.addAttribute("movies",movieService.findAll());
+//        model.addAttribute("movies",movieService.findAll(filter));
         return "movie/allMovies";
     }
 
