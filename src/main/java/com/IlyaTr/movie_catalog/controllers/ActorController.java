@@ -1,14 +1,19 @@
 package com.IlyaTr.movie_catalog.controllers;
 
 
-import com.IlyaTr.movie_catalog.dto.ActorCreateEditDto;
-import com.IlyaTr.movie_catalog.dto.ActorReadDto;
+import com.IlyaTr.movie_catalog.dto.PageResponse;
+import com.IlyaTr.movie_catalog.dto.actor.ActorCreateEditDto;
+import com.IlyaTr.movie_catalog.dto.actor.ActorReadDto;
+import com.IlyaTr.movie_catalog.dto.filter.ActorFilter;
 import com.IlyaTr.movie_catalog.services.ActorService;
 import com.IlyaTr.movie_catalog.services.MovieService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -33,16 +38,29 @@ public class ActorController {
 
     @PostMapping
     public String createActor(@ModelAttribute @Validated ActorCreateEditDto actorDto,
+                              BindingResult bindingResult,
                               RedirectAttributes redirectAttributes){
-        if (!actorDto.getImage().isEmpty()){
-            ActorReadDto actor = actorService.createActor(actorDto);
-            return "redirect:/actors/"+actor.getId();
+        if (actorDto.getImage().isEmpty()){
+            bindingResult.rejectValue("image","imageNotFound", "добавьте изображение");
         }
-        redirectAttributes.addFlashAttribute("actor", actorDto);
-        return "redirect:/actors/create";
+        if (actorDto.getImage().isEmpty()|| bindingResult.hasErrors()){
+            redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
+            redirectAttributes.addFlashAttribute("actor", actorDto);
+            return "redirect:/actors/create";
+        }
+        ActorReadDto actor = actorService.createActor(actorDto);
+        return "redirect:/actors/"+actor.getId();
     }
     @PostMapping("/{id}/update")
-    public String updateActor(@ModelAttribute @Validated ActorCreateEditDto actorDto, @PathVariable Integer id){
+    public String updateActor(@PathVariable Integer id,
+                              @ModelAttribute @Validated ActorCreateEditDto actorDto,
+                              BindingResult bindingResult,
+                              RedirectAttributes redirectAttributes){
+        if (bindingResult.hasErrors()){
+            redirectAttributes.addFlashAttribute("errors", bindingResult.getAllErrors());
+//            redirectAttributes.addFlashAttribute("actor", actorDto);
+            return "redirect:/actors/"+ id;
+        }
         ActorReadDto actor = actorService.updateActor(actorDto,id);
         return "redirect:/actors/"+ actor.getId();
     }
@@ -55,8 +73,9 @@ public class ActorController {
     }
 
     @GetMapping
-    public String getAllActors(Model model){
-        model.addAttribute("actors", actorService.findAll());
+    public String getAllActors(Model model, ActorFilter actorFilter, @PageableDefault(size = 3) Pageable pageable){
+        model.addAttribute("actors", PageResponse.of(actorService.findAll(actorFilter, pageable)));
+        model.addAttribute("actorFilter", actorFilter);
         return "actor/allActors";
     }
 

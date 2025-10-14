@@ -1,13 +1,10 @@
 package com.IlyaTr.movie_catalog.rest.controllers;
 
-import com.IlyaTr.movie_catalog.dto.ActorReadDto;
-import com.IlyaTr.movie_catalog.dto.MovieCreateEditDto;
-import com.IlyaTr.movie_catalog.dto.MovieReadDto;
-import com.IlyaTr.movie_catalog.entities.Actor;
+import com.IlyaTr.movie_catalog.dto.movie.MovieCreateEditDto;
+import com.IlyaTr.movie_catalog.dto.movie.MovieReadDto;
 import com.IlyaTr.movie_catalog.services.ImageService;
 import com.IlyaTr.movie_catalog.services.MovieService;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;

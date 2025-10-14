@@ -1,13 +1,11 @@
 package com.IlyaTr.movie_catalog.mapper;
 
-import com.IlyaTr.movie_catalog.dto.ActorCreateEditDto;
-import com.IlyaTr.movie_catalog.dto.GenreCreateEditDto;
-import com.IlyaTr.movie_catalog.dto.MovieCreateEditDto;
+import com.IlyaTr.movie_catalog.dto.actor.ActorCreateEditDto;
+import com.IlyaTr.movie_catalog.dto.genre.GenreCreateEditDto;
+import com.IlyaTr.movie_catalog.dto.movie.MovieCreateEditDto;
 import com.IlyaTr.movie_catalog.entities.Actor;
 import com.IlyaTr.movie_catalog.entities.Genre;
 import com.IlyaTr.movie_catalog.entities.Movie;
-
-import java.util.Set;
 
 public interface MappingHelper {
 

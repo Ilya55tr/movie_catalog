@@ -1,8 +1,6 @@
-package com.IlyaTr.movie_catalog.dto;
+package com.IlyaTr.movie_catalog.dto.movie;
 
 import lombok.*;
-
-import java.math.BigDecimal;
 
 @Data
 @NoArgsConstructor

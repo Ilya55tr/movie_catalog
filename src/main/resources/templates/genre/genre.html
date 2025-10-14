@@ -187,6 +187,10 @@
 
         <button type="submit">💾 Изменить жанр</button>
 
+        <div th:if="${errors}">
+            <p th:each="error:${errors}" th:text="${error.defaultMessage}">error</p>
+        </div>
+
         <h3>🎬 Фильмы этого жанра:</h3>
         <div th:each="movie, stat: *{getMovies()}" class="movie-card">
             <div th:if="${movie.getImage()}">
@@ -198,7 +202,6 @@
             </div>
         </div>
     </form>
-
     <form th:action="@{/genres/{id}/delete(id=${genre.getId()})}" method="post">
         <button type="submit" class="delete-button">🗑️ Удалить жанр</button>
     </form>

@@ -18,3 +18,5 @@ spring:
 app:
   image:
     bucket: F:\java_projects\movie_catalog\images
+
+

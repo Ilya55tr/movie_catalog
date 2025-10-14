@@ -1,11 +1,13 @@
 package com.IlyaTr.movie_catalog.services;
 
-import com.IlyaTr.movie_catalog.dto.GenreCreateEditDto;
-import com.IlyaTr.movie_catalog.dto.GenreReadDto;
+import com.IlyaTr.movie_catalog.dto.genre.GenreCreateEditDto;
+import com.IlyaTr.movie_catalog.dto.genre.GenreReadDto;
 import com.IlyaTr.movie_catalog.mapper.GenreMapper;
 import com.IlyaTr.movie_catalog.mapper.MappingHelperImpl;
 import com.IlyaTr.movie_catalog.repositories.GenreRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,5 +69,9 @@ public class GenreService {
                 .stream().map(genreMapper::toReadDto).collect(Collectors.toSet());
     }
 
+    public Page<GenreReadDto> findAll(Pageable pageable){
+        return genreRepository.findAll(pageable)
+                .map(genreMapper::toReadDto);
+    }
 
 }

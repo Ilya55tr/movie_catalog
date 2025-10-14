@@ -1,7 +1,8 @@
 package com.IlyaTr.movie_catalog.services;
 
-import com.IlyaTr.movie_catalog.dto.MovieCreateEditDto;
-import com.IlyaTr.movie_catalog.dto.MovieReadDto;
+import com.IlyaTr.movie_catalog.dto.QPredicates;
+import com.IlyaTr.movie_catalog.dto.movie.MovieCreateEditDto;
+import com.IlyaTr.movie_catalog.dto.movie.MovieReadDto;
 import com.IlyaTr.movie_catalog.dto.filter.MovieFilter;
 import com.IlyaTr.movie_catalog.entities.Actor;
 import com.IlyaTr.movie_catalog.entities.Movie;
@@ -9,12 +10,17 @@ import com.IlyaTr.movie_catalog.mapper.MappingHelperImpl;
 import com.IlyaTr.movie_catalog.mapper.MovieMapper;
 import com.IlyaTr.movie_catalog.repositories.MovieRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static com.IlyaTr.movie_catalog.entities.QMovie.movie;
 
 @Service
 @RequiredArgsConstructor
@@ -108,13 +114,26 @@ public class MovieService {
                 .collect(Collectors.toSet());
     }
 
-//    public Set<MovieReadDto> findAll(MovieFilter filter){
-//        return movieRepository
-//                .findAllByFilter(filter)
-//                .stream()
-//                .map(movieMapper::toReadDto)
-//                .collect(Collectors.toSet());
-//    }
+    public Set<MovieReadDto> findAll(MovieFilter filter){
+        return movieRepository
+                .findAllByFilter(filter)
+                .stream()
+                .map(movieMapper::toReadDto)
+                .collect(Collectors.toSet());
+    }
+
+    public Page<MovieReadDto> findAll(MovieFilter filter, Pageable pageable){
+        var predicates = QPredicates.builder()
+                .add(filter.title(), movie.title::containsIgnoreCase)
+                .add(filter.releaseYear(), movie.releaseYear::eq)
+                .add(filter.rating(), movie.rating::goe)
+                .add(filter.genre(), movie.genre.id::eq).build();
+
+        return movieRepository
+                .findAll(predicates, pageable)
+                .map(movieMapper::toReadDto);
+    }
+
 
 
 

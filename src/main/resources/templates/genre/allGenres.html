@@ -138,6 +138,24 @@
             color: #999;
         }
     </style>
+
+    <style>
+        .pagination {
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .pagination a {
+            text-decoration: none;
+            color: #0066cc;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .pagination a:hover {
+            background-color: #e0e0e0;
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -157,7 +175,7 @@
     </div>
 
     <div class="genres-grid">
-        <div th:each="genre, stat : ${genres}" class="genre-card">
+        <div th:each="genre, stat : ${genres.getContent()}" class="genre-card">
             <div th:if="${genre.getImage()}">
                 <img th:src="@{'/api/v1/genre/genres/'+${genre.getImage()}}" alt="Картинка жанра" class="genre-image">
             </div>
@@ -169,6 +187,31 @@
                 <a th:href="@{'/genres/' + ${genre.getId()}}" th:text="${genre.getName()}">genre</a>
             </div>
         </div>
+    </div>
+
+    <div class="pagination">
+        <!-- Кнопка Назад -->
+        <a th:if="${genres.metadata.hasPrevious}"
+           th:href="@{/genres(page=${genres.metadata.page - 1})}">
+            ◀ Назад
+        </a>
+
+        <!-- Номера страниц -->
+        <span th:each="i : ${#numbers.sequence(0, genres.metadata.totalElements - 1)}">
+        <a th:if="${i != genres.metadata.page}"
+           th:href="@{/genres(page=${i})}"
+           th:text="${i + 1}"></a>
+
+        <span th:if="${i == genres.metadata.page}"
+              th:text="${i + 1}"
+              style="font-weight: bold; text-decoration: underline;"></span>
+    </span>
+
+        <!-- Кнопка Вперёд -->
+        <a th:if="${genres.metadata.page}"
+           th:href="@{/genres(page=${genres.metadata.page + 1})}">
+            Вперёд ▶
+        </a>
     </div>
 </div>
 </body>

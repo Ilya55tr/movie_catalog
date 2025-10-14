@@ -212,6 +212,9 @@
         </div>
 
         <button type="submit">💾 Изменить актера</button>
+        <div th:if="${errors}">
+            <p th:each="error : ${errors}" th:text="${error.defaultMessage}">Error message</p>
+        </div>
 
         <h3>🎬 Фильмы в которых снимался актер:</h3>
         <div th:each="movie, stat: *{getMovies()}" class="movie-card">

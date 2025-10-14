@@ -130,12 +130,12 @@
 
         <div class="form-group">
             <label for="actorName">Полное имя:</label>
-            <input id="actorName" type="text" name="fullName" th:value="*{getFullName()}" placeholder="Введите полное имя актера" required>
+            <input id="actorName" type="text" name="fullName" th:value="*{getFullName()}" placeholder="Введите полное имя актера">
         </div>
 
         <div class="form-group">
             <label for="birthDate">Дата рождения:</label>
-            <input id="birthDate" type="date" name="birthDate" th:value="*{getBirthDate()}" required>
+            <input id="birthDate" type="date" name="birthDate" th:value="*{getBirthDate()}" >
         </div>
 
         <div class="form-group">
@@ -153,7 +153,9 @@
             <button type="submit" class="submit-button">➕ Добавить актера</button>
         </div>
     </form>
-
+    <div th:if="${errors}">
+       <p th:each="error:${errors}" th:text="${error.defaultMessage}">error</p>
+    </div>
     <form th:action="@{/actors}" method="get">
         <button type="submit" class="back-button">⬅️ Назад</button>
     </form>

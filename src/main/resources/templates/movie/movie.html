@@ -241,7 +241,9 @@
         </div>
 
         <button type="submit">💾 Изменить фильм</button>
-
+        <div th:if="${errors}">
+            <p th:each="error:${errors}" th:text="${error.defaultMessage}">error</p>
+        </div>
         <h3>⭐ Актеры фильма:</h3>
         <div th:each="actor, stat: *{getActors()}" class="actor-card">
             <div th:if="${actor.getImage()}">

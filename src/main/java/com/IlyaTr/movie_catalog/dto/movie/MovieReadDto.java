@@ -1,5 +1,7 @@
-package com.IlyaTr.movie_catalog.dto;
+package com.IlyaTr.movie_catalog.dto.movie;
 
+import com.IlyaTr.movie_catalog.dto.actor.ActorReadDto;
+import com.IlyaTr.movie_catalog.dto.genre.GenreReadDto;
 import lombok.*;
 
 import java.math.BigDecimal;

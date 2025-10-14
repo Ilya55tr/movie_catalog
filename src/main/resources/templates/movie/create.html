@@ -138,12 +138,12 @@
 
         <div class="form-group">
             <label for="title">Название фильма:</label>
-            <input id="title" type="text" name="title" th:value="*{getTitle()}" placeholder="Введите название фильма" required>
+            <input id="title" type="text" name="title" th:value="*{getTitle()}" placeholder="Введите название фильма" >
         </div>
 
         <div class="form-group">
             <label for="releaseYear">Год выпуска:</label>
-            <input id="releaseYear" type="number" name="releaseYear" th:value="*{getReleaseYear()}" placeholder="2024" min="1800" max="2100" required>
+            <input id="releaseYear" type="number" name="releaseYear" th:value="*{getReleaseYear()}" placeholder="2024" min="1800" max="2100" >
         </div>
 
         <div class="form-group">
@@ -167,7 +167,7 @@
 
         <div class="form-group">
             <label for="genre">Выберите жанр:</label>
-            <select id="genre" th:field="*{genreId}" required>
+            <select id="genre" th:field="*{genreId}" >
                 <option value="">-- Выберите жанр --</option>
                 <option
                         th:each="genre: ${genres}"
@@ -193,6 +193,9 @@
             <button type="submit" class="submit-button">➕ Добавить фильм</button>
         </div>
     </form>
+    <div th:if="${errors}">
+        <p th:each="error:${errors}" th:text="${error.defaultMessage}">error</p>
+    </div>
 
     <form th:action="@{/movies}" method="get">
         <button type="submit" class="back-button">⬅️ Назад</button>

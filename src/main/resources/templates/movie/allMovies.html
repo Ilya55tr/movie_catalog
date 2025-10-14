@@ -139,6 +139,88 @@
             color: #999;
         }
     </style>
+
+    <style>
+        .pagination {
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .pagination a {
+            text-decoration: none;
+            color: #0066cc;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .pagination a:hover {
+            background-color: #e0e0e0;
+        }
+        .filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            font-family: "Segoe UI", Roboto, sans-serif;
+        }
+
+        .filter-form label {
+            display: flex;
+            flex-direction: column;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .filter-form input,
+        .filter-form select {
+            margin-top: 0.4rem;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .filter-form input:focus,
+        .filter-form select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            outline: none;
+        }
+
+        .filter-form button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease-in-out;
+        }
+
+        .filter-form button:hover {
+            background-color: #2563eb;
+        }
+
+        @media (max-width: 768px) {
+            .filter-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-form button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -154,34 +236,33 @@
             <form th:action="@{/actors}" method="get" style="display: inline;">
                 <button type="submit">⭐ Показать всех актеров</button>
             </form>
-<!--            <form th:action="@{/movies}" method="get">-->
-<!--                <label for="title">Название:-->
-<!--                    <input id="title" type="text" name="title">-->
-<!--                </label>-->
-<!--                <label for="releaseYear">Год выпуска:-->
-<!--                    <input id="releaseYear" type="text" name="releaseYear">-->
-<!--                </label>-->
-<!--                <label for="rating">Рейтинг:-->
-<!--                    <input id="rating" type="text" name="rating">-->
-<!--                </label>-->
-<!--                <label for="genre">Жанр:</label>-->
-<!--                <select id="genre" name="genre">-->
-<!--                    <option-->
-<!--                            th:each="genre: ${genres}"-->
-<!--                            th:value="${genre.getId()}"-->
-<!--                            th:selected="${genre.getId() == movie.getGenreId()}"-->
-<!--                            th:text="${genre.getName()}">Жанр-->
-<!--                    </option>-->
-<!--                </select>-->
-
-
-<!--                <button type="submit"> Поиск фильма</button>-->
-<!--            </form>-->
+            <form th:action="@{/movies}" method="get" class="filter-form">
+                <label for="title">Название:
+                    <input id="title" type="text" name="title" th:value = "${filter.title()}" >
+                </label>
+                <label for="releaseYear">Год выпуска:
+                    <input id="releaseYear" type="text" name="releaseYear" th:value = "${filter.releaseYear()}">
+                </label>
+                <label for="rating">Рейтинг:
+                    <input id="rating" type="text" name="rating" th:value = "${filter.rating()}">
+                </label>
+                <label for="genre">Жанр:</label>
+                <select id="genre" name="genre">
+                    <option value="">Все жанры</option>
+                    <option
+                            th:each="genre: ${genres}"
+                            th:value="${genre.getId()}"
+                            th:selected="${genre.getId() == filter.genre()}"
+                            th:text="${genre.getName()}">Жанр
+                    </option>
+                </select>
+                <button type="submit"> Поиск фильма</button>
+            </form>
         </div>
     </div>
 
     <div class="movies-grid">
-        <div th:each="movie, stat : ${movies}" class="movie-card">
+        <div th:each="movie, stat : ${movies.getContent()}" class="movie-card">
             <div th:if="${movie.getImage()}">
                 <img th:src="@{'/api/v1/movie/movies/'+${movie.getImage()}}" alt="Картинка фильма" class="movie-image">
             </div>
@@ -193,6 +274,43 @@
                 <a th:href="@{'/movies/' + ${movie.getId()}}" th:text="${movie.getTitle()}">movie</a>
             </div>
         </div>
+    </div>
+
+    <div class="pagination">
+        <!-- Кнопка Назад -->
+        <a th:if="${movies.metadata.hasPrevious}"
+           th:href="@{/movies(page=${movies.metadata.page - 1},
+           title=${filter.title()},
+           releaseYear=${filter.releaseYear()},
+           rating=${filter.rating()},
+           genre=${filter.genre()})}">
+            ◀ Назад
+        </a>
+
+        <!-- Номера страниц -->
+        <span th:each="i : ${#numbers.sequence(0, movies.metadata.totalElements - 1)}">
+        <a th:if="${i != movies.metadata.page}"
+           th:href="@{/movies(page=${i},
+           title=${filter.title()},
+           releaseYear=${filter.releaseYear()},
+           rating=${filter.rating()},
+           genre=${filter.genre()})}"
+           th:text="${i + 1}"></a>
+
+        <span th:if="${i == movies.metadata.page}"
+              th:text="${i + 1}"
+              style="font-weight: bold; text-decoration: underline;"></span>
+    </span>
+
+        <!-- Кнопка Вперёд -->
+        <a th:if="${movies.metadata.hasNext}"
+           th:href="@{/movies(page=${movies.metadata.page + 1},
+           title=${filter.title()},
+           releaseYear=${filter.releaseYear()},
+           rating=${filter.rating()},
+           genre=${filter.genre()})}">
+            Вперёд ▶
+        </a>
     </div>
 </div>
 </body>

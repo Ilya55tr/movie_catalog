@@ -1,8 +1,8 @@
-package com.IlyaTr.movie_catalog.dto;
+package com.IlyaTr.movie_catalog.dto.genre;
 
+import com.IlyaTr.movie_catalog.dto.movie.MovieShortDto;
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,11 +12,11 @@ import java.util.Set;
 @Getter
 @Setter
 @Builder
-public class ActorReadDto {
+public class GenreReadDto {
     private Integer id;
-    private String fullName;
-    private LocalDate birthDate;
+    private String name;
+    private String image;
+
     @Builder.Default
     private Set<MovieShortDto> movies = new HashSet<>();
-    private String image;
 }

@@ -1,7 +1,7 @@
 package com.IlyaTr.movie_catalog.mapper;
 
-import com.IlyaTr.movie_catalog.dto.ActorCreateEditDto;
-import com.IlyaTr.movie_catalog.dto.ActorReadDto;
+import com.IlyaTr.movie_catalog.dto.actor.ActorCreateEditDto;
+import com.IlyaTr.movie_catalog.dto.actor.ActorReadDto;
 import com.IlyaTr.movie_catalog.entities.Actor;
 import org.mapstruct.*;
 

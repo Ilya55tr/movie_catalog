@@ -144,6 +144,88 @@
             color: #999;
         }
     </style>
+
+    <style>
+        .pagination {
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .pagination a {
+            text-decoration: none;
+            color: #0066cc;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .pagination a:hover {
+            background-color: #e0e0e0;
+        }
+        .filter-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+            background: #f9fafb;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            font-family: "Segoe UI", Roboto, sans-serif;
+        }
+
+        .filter-form label {
+            display: flex;
+            flex-direction: column;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+
+        .filter-form input,
+        .filter-form select {
+            margin-top: 0.4rem;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .filter-form input:focus,
+        .filter-form select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+            outline: none;
+        }
+
+        .filter-form button {
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease-in-out;
+        }
+
+        .filter-form button:hover {
+            background-color: #2563eb;
+        }
+
+        @media (max-width: 768px) {
+            .filter-form {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .filter-form button {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
 <div class="container">
@@ -161,9 +243,33 @@
             </form>
         </div>
     </div>
+    <form th:action="@{/actors}" method="get" class="filter-form">
+        <label for="fullName">Полное имя:
+            <input id="fullName" type="text" name="fullName" th:value="${actorFilter.fullName}">
+        </label>
+
+        <label for="birthdate">Дата рождения:
+            <input id="birthdate" type="date" name="birthdate" th:value="${actorFilter.birthdate}">
+        </label>
+
+        <label for="movieTitle">Название фильма:
+            <input id="movieTitle" type="text" name="movieTitle" th:value="${actorFilter.movieTitle}">
+        </label>
+
+        <button type="submit">Поиск актёра</button>
+    </form>
+
+    <div th:if="${actorFilter.movieTitle != null && !actorFilter.movieTitle.isEmpty()}" class="search-info">
+        <p th:if="${actorFilter.similarSearch}">
+            Показаны похожие результаты для: "<span th:text="${actorFilter.movieTitle}"></span>"
+        </p>
+        <p th:if="${!actorFilter.similarSearch}">
+            Найдено точное совпадение для: "<span th:text="${actorFilter.movieTitle}"></span>"
+        </p>
+    </div>
 
     <div class="actors-grid">
-        <div th:each="actor, stat : ${actors}" class="actor-card">
+        <div th:each="actor, stat : ${actors.getContent()}" class="actor-card">
             <div th:if="${actor.getImage()}">
                 <img th:src="@{'/api/v1/actor/actors/'+${actor.getImage()}}" alt="Картинка актера" class="actor-image">
             </div>
@@ -177,6 +283,44 @@
             </div>
         </div>
     </div>
+
+    <div class="pagination">
+        <!-- Кнопка Назад -->
+        <a th:if="${actors.metadata.hasPrevious}"
+           th:href="@{/actors(page=${actors.metadata.page - 1},
+       size=${actors.metadata.size},
+       fullName=${actorFilter.fullName},
+       birthdate=${actorFilter.birthdate},
+       movieTitle=${actorFilter.movieTitle})}">
+            ◀ Назад
+        </a>
+
+        <!-- Номера страниц -->
+        <span th:each="i : ${#numbers.sequence(0, actors.metadata.totalElements - 1)}">
+        <a th:if="${i != actors.metadata.page}"
+           th:href="@{/actors(page=${i},
+           size=${actors.metadata.size},
+           fullName=${actorFilter.fullName},
+           birthdate=${actorFilter.birthdate},
+           movieTitle=${actorFilter.movieTitle})}"
+           th:text="${i + 1}"></a>
+
+        <span th:if="${i == actors.metadata.page}"
+              th:text="${i + 1}"
+              style="font-weight: bold; text-decoration: underline;"></span>
+    </span>
+
+        <!-- Кнопка Вперёд -->
+        <a th:if="${actors.metadata.page}"
+           th:href="@{/actors(page=${actors.metadata.page + 1},
+       size=${actors.metadata.size},
+       fullName=${actorFilter.fullName},
+       birthdate=${actorFilter.birthdate},
+       movieTitle=${actorFilter.movieTitle})}">
+            Вперёд ▶
+        </a>
+    </div>
+
 </div>
 </body>
 </html>

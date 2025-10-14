@@ -1,7 +1,7 @@
 package com.IlyaTr.movie_catalog.mapper;
 
-import com.IlyaTr.movie_catalog.dto.GenreCreateEditDto;
-import com.IlyaTr.movie_catalog.dto.GenreReadDto;
+import com.IlyaTr.movie_catalog.dto.genre.GenreCreateEditDto;
+import com.IlyaTr.movie_catalog.dto.genre.GenreReadDto;
 import com.IlyaTr.movie_catalog.entities.Genre;
 import org.mapstruct.*;
 

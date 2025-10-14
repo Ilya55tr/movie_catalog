@@ -1,14 +1,12 @@
 package com.IlyaTr.movie_catalog.rest.controllers;
 
-import com.IlyaTr.movie_catalog.dto.GenreCreateEditDto;
-import com.IlyaTr.movie_catalog.dto.GenreReadDto;
+import com.IlyaTr.movie_catalog.dto.genre.GenreCreateEditDto;
+import com.IlyaTr.movie_catalog.dto.genre.GenreReadDto;
 import com.IlyaTr.movie_catalog.services.GenreService;
 import com.IlyaTr.movie_catalog.services.ImageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
