@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org">
+    <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <title>Все жанры</title>
     <style>
         * {
@@ -159,10 +159,11 @@
 </head>
 <body>
 <div class="container">
+    <div th:insert="~{/user/userMenuFragments :: UserMenu}"></div>
     <div class="header">
         <h1>🎭 Жанры</h1>
         <div class="nav-buttons">
-            <form th:action="@{/genres/create}" method="get" style="display: inline;">
+            <form sec:authorize="hasAuthority('testapp.admin')"  th:action="@{/genres/create}" method="get" style="display: inline;">
                 <button type="submit" class="add-button">➕ Добавить новый жанр</button>
             </form>
             <form th:action="@{/movies}" method="get" style="display: inline;">
@@ -177,7 +178,7 @@
     <div class="genres-grid">
         <div th:each="genre, stat : ${genres.getContent()}" class="genre-card">
             <div th:if="${genre.getImage()}">
-                <img th:src="@{'/api/v1/genre/genres/'+${genre.getImage()}}" alt="Картинка жанра" class="genre-image">
+                <img th:src="@{'/api/v1/image/genres/'+${genre.getImage()}}" alt="Картинка жанра" class="genre-image">
             </div>
             <div th:unless="${genre.getImage()}" class="no-image">
                 🎭 Нет изображения
@@ -208,7 +209,7 @@
     </span>
 
         <!-- Кнопка Вперёд -->
-        <a th:if="${genres.metadata.page}"
+        <a th:if="${genres.metadata.hasNext}"
            th:href="@{/genres(page=${genres.metadata.page + 1})}">
             Вперёд ▶
         </a>

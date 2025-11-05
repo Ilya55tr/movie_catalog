@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org">
+    <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <title>Все фильмы</title>
     <style>
         * {
@@ -220,14 +220,31 @@
                 width: 100%;
             }
         }
+
+
+        .heart-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 22px;
+            color: black;
+        }
+
+        .heart-button.red {
+            color: red;
+        }
     </style>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+          referrerpolicy="no-referrer" />
 </head>
 <body>
 <div class="container">
+    <div th:insert="~{/user/userMenuFragments :: UserMenu}"></div>
     <div class="header">
         <h1>🎬 Фильмы</h1>
         <div class="nav-buttons">
-            <form th:action="@{/movies/create}" method="get" style="display: inline;">
+            <form sec:authorize="hasAuthority('testapp.admin')" th:action="@{/movies/create}" method="get" style="display: inline;">
                 <button type="submit" class="add-button">➕ Добавить новый фильм</button>
             </form>
             <form th:action="@{/genres}" method="get" style="display: inline;">
@@ -264,7 +281,7 @@
     <div class="movies-grid">
         <div th:each="movie, stat : ${movies.getContent()}" class="movie-card">
             <div th:if="${movie.getImage()}">
-                <img th:src="@{'/api/v1/movie/movies/'+${movie.getImage()}}" alt="Картинка фильма" class="movie-image">
+                <img th:src="@{'/api/v1/image/movies/'+${movie.getImage()}}" alt="Картинка фильма" class="movie-image">
             </div>
             <div th:unless="${movie.getImage()}" class="no-image">
                 🎬 Нет изображения
@@ -272,6 +289,25 @@
             <div class="movie-info">
                 <span class="movie-number" th:text="${stat.index+1}">1</span>
                 <a th:href="@{'/movies/' + ${movie.getId()}}" th:text="${movie.getTitle()}">movie</a>
+            </div>
+            <div th:if="${isAuth}">
+                <form th:action="@{/movies/addMovie/{movieId}(movieId=${movie.id})}"
+                      th:if="${favoriteMoviesIds != null and !(favoriteMoviesIds.contains(movie.id))}"
+                      method="post">
+                    <input type="hidden" name="redirectUrl" th:value="${currentUrl}">
+                    <button type="submit" class="heart-button">
+                        <i class="fa-regular fa-heart"></i> <!-- пустое сердце -->
+                    </button>
+                </form>
+
+                <form th:action="@{/movies/removeMovie/{movieId}(movieId=${movie.id})}"
+                      th:if="${favoriteMoviesIds != null and favoriteMoviesIds.contains(movie.id)}"
+                      method="post">
+                    <input type="hidden" name="redirectUrl" th:value="${currentUrl}">
+                    <button type="submit" class="heart-button red">
+                        <i class="fa-solid fa-heart"></i> <!-- красное сердце -->
+                    </button>
+                </form>
             </div>
         </div>
     </div>

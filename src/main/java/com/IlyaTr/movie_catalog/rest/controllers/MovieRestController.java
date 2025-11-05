@@ -19,15 +19,8 @@ import java.util.Set;
 public class MovieRestController {
 
     private final MovieService movieService;
-    private final ImageService imageService;
 
-    @GetMapping("/{subDir}/{fileName:.+}")
-    @ResponseStatus(HttpStatus.OK)
-    public Resource getImage(@PathVariable String subDir,
-                             @PathVariable String fileName){
-        Resource image = imageService.load(fileName, subDir);
-        return image;
-    }
+
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public MovieReadDto createMovie(@RequestBody @Validated MovieCreateEditDto movieDto){

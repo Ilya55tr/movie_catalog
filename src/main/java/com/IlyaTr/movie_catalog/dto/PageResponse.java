@@ -11,12 +11,12 @@ import java.util.Set;
 
 @Value
 public class PageResponse<T>{
-   List<T> content;
+    List<T> content;
     Metadata metadata;
 
     public static <T> PageResponse<T> of(Page<T> page) {
         var metadata = new Metadata(page.getNumber(), page.getSize(), page.getTotalPages(),
-                page.hasPrevious(), page.hasPrevious());
+                page.hasPrevious(), page.hasNext());
         return new PageResponse<>(page.getContent(), metadata);
     }
 

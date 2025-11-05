@@ -17,13 +17,6 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class ActorRestController {
     private final ActorService actorService;
-    private final ImageService imageService;
-
-    @GetMapping("/{subDir}/{fileName}")
-    public Resource getImage(@PathVariable String subDir, @PathVariable String fileName){
-        Resource image = imageService.load(fileName, subDir);
-        return image;
-    }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)

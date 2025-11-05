@@ -15,7 +15,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString(exclude = "actors")
+@ToString(exclude = {"actors", "users"})
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @Builder
 public class Movie {
@@ -48,7 +48,6 @@ public class Movie {
     )
     @Builder.Default
     private Set<Actor> actors = new HashSet<>();
-
     public void addActor(Actor actor){
         actors.add(actor);
         actor.getMovies().add(this);
@@ -58,6 +57,10 @@ public class Movie {
         actors.remove(actor);
         actor.getMovies().remove(this);
     }
+
+    @ManyToMany(fetch = FetchType.LAZY,mappedBy = "movies")
+    @Builder.Default
+    private List<User> users = new ArrayList<>();
 
     private String image;
 

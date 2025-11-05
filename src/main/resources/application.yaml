@@ -15,6 +15,34 @@ spring:
     multipart:
       max-file-size: 5MB
       max-request-size: 6MB
+  security:
+    oauth2:
+      client:
+        provider:
+          keycloak:
+            issuer-uri: http://localhost:8080/realms/movies_catalog
+        #            user-name-attribute: preferred_username
+        registration:
+          keycloak:
+            provider: keycloak
+            client-id: movies_catalog
+            client-secret: y6UmCKKiubYNTeovFOi7EpHqdamhDEpg
+            client-name: movies_catalog
+            scope: openid, profile, email
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8080/realms/movies_catalog
+
+keycloak:
+  admin:
+    url: http://localhost:8080
+    realm: movies_catalog
+    client-id: app-admin
+    client-secret: lm5DIzkEM5nM91k83hqxalsgDFKR3wQJ
+
+server:
+  port: 8081
+
 app:
   image:
     bucket: F:\java_projects\movie_catalog\images

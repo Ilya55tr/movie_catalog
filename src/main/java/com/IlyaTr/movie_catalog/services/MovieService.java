@@ -4,6 +4,7 @@ import com.IlyaTr.movie_catalog.dto.QPredicates;
 import com.IlyaTr.movie_catalog.dto.movie.MovieCreateEditDto;
 import com.IlyaTr.movie_catalog.dto.movie.MovieReadDto;
 import com.IlyaTr.movie_catalog.dto.filter.MovieFilter;
+import com.IlyaTr.movie_catalog.dto.movie.MovieShortDto;
 import com.IlyaTr.movie_catalog.entities.Actor;
 import com.IlyaTr.movie_catalog.entities.Movie;
 import com.IlyaTr.movie_catalog.mapper.MappingHelperImpl;
@@ -47,6 +48,7 @@ public class MovieService {
                 .map(movieMapper::toReadDto)
                 .orElseThrow();
     }
+
 
     @Transactional
     public boolean deleteMovie(Integer id){
@@ -134,6 +136,17 @@ public class MovieService {
                 .map(movieMapper::toReadDto);
     }
 
+    public Page<MovieShortDto> findMoviesByGenreId(Integer genreId, Pageable pageable){
+        return movieRepository
+                .findMoviesByGenreId(genreId, pageable)
+                .map(movieMapper::toShortDto);
+    }
+
+    public Page<MovieShortDto> findMoviesByActorId(Integer actorId, Pageable pageable){
+        return movieRepository
+                .findMoviesByActors_Id(actorId, pageable)
+                .map(movieMapper::toShortDto);
+    }
 
 
 

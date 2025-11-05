@@ -117,6 +117,7 @@
 </head>
 <body xmlns:th="http://www.thymeleaf.org">
 <div class="container">
+    <div th:insert="~{/user/userMenuFragments :: UserMenu}"></div>
     <form th:action="@{/genres}" method="post" enctype="multipart/form-data" th:object="${genre}">
         <div class="icon">🎭</div>
         <h1>Новый жанр</h1>

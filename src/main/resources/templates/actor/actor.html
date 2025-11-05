@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org">
+    <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <title>Актер</title>
     <style>
         * {
@@ -113,47 +113,61 @@
             height: 150px;
         }
 
+        .movies-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
         .movie-card {
-            background: #f8f9fa;
-            padding: 20px;
+            background: white;
             border-radius: 15px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             transition: all 0.3s ease;
+            position: relative;
         }
 
         .movie-card:hover {
-            transform: translateX(10px);
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-10px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
         }
 
-        .movie-card-image {
-            width: 120px;
-            height: 180px;
+        .movie-image {
+            width: 100%;
+            height: 350px;
             object-fit: cover;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        .movie-info a {
-            text-decoration: none;
-            color: #667eea;
-            font-weight: 600;
-            font-size: 18px;
             display: block;
-            margin-bottom: 5px;
         }
 
-        .movie-info a:hover {
-            color: #764ba2;
+        .movie-info {
+            padding: 20px;
         }
 
-        .movie-info p {
-            color: #666;
+        .movie-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
             font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .movie-card a {
+            text-decoration: none;
+            color: #333;
+            font-size: 1.2em;
+            font-weight: 600;
+            display: block;
+            margin-top: 10px;
+            transition: color 0.3s ease;
+        }
+
+        .movie-card a:hover {
+            color: #667eea;
         }
 
         .delete-button {
@@ -173,10 +187,53 @@
             margin-bottom: 15px;
             font-size: 18px;
         }
+
+        .heart-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 22px;
+            color: black;
+        }
+
+        .heart-button.red {
+            color: red;
+        }
+
+        .pagination {
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .pagination a {
+            text-decoration: none;
+            color: #0066cc;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .pagination a:hover {
+            background-color: #e0e0e0;
+        }
+
+        .info-field {
+            padding: 12px 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 16px;
+            color: #333;
+            border: 2px solid #e0e0e0;
+        }
     </style>
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+          referrerpolicy="no-referrer" />
 </head>
 <body>
 <div class="container">
+    <div th:insert="~{/user/userMenuFragments :: UserMenu}"></div>
     <div class="nav-buttons">
         <form th:action="@{/movies}" method="get" style="display: inline;">
             <button type="submit">🎬 Показать все фильмы</button>
@@ -189,11 +246,12 @@
         </form>
     </div>
 
-    <form th:action="@{/actors/{id}/update(id=${actor.getId()})}" method="post" enctype="multipart/form-data" th:object="${actor}">
+    <!-- Форма редактирования для администратора -->
+    <form sec:authorize="hasAuthority('testapp.admin')" th:action="@{/actors/{id}/update(id=${actor.getId()})}" method="post" enctype="multipart/form-data" th:object="${actor}">
         <h1>⭐ Актер</h1>
 
         <div th:if="${actor.getImage()}">
-            <img th:src="@{'/api/v1/actor/actors/'+${actor.getImage()}}" alt="Картинка актера" class="actor-image">
+            <img th:src="@{'/api/v1/image/actors/'+${actor.getImage()}}" alt="Картинка актера" class="actor-image">
         </div>
 
         <div class="form-group">
@@ -215,52 +273,120 @@
         <div th:if="${errors}">
             <p th:each="error : ${errors}" th:text="${error.defaultMessage}">Error message</p>
         </div>
+    </form>
 
-        <h3>🎬 Фильмы в которых снимался актер:</h3>
-        <div th:each="movie, stat: *{getMovies()}" class="movie-card">
+    <!-- Просмотр информации для обычных пользователей и неавторизованных -->
+    <div sec:authorize="!hasAuthority('testapp.admin')">
+        <h1>⭐ Актер</h1>
+
+        <div th:if="${actor.getImage()}">
+            <img th:src="@{'/api/v1/image/actors/'+${actor.getImage()}}" alt="Картинка актера" class="actor-image">
+        </div>
+
+        <div class="form-group">
+            <label>Имя:</label>
+            <div class="info-field" th:text="${actor.getFullName()}">Имя актера</div>
+        </div>
+
+        <div class="form-group">
+            <label>Дата рождения:</label>
+            <div class="info-field" th:text="${actor.getBirthDate()}">Дата рождения</div>
+        </div>
+    </div>
+
+    <h3>🎬 Фильмы в которых снимался актер:</h3>
+    <div class="movies-grid">
+        <div th:each="movie, stat : ${movies.getContent()}" class="movie-card">
             <div th:if="${movie.getImage()}">
-                <img th:src="@{'/api/v1/movie/movies/'+${movie.getImage()}}" alt="Картинка фильма" class="movie-card-image">
+                <img th:src="@{'/api/v1/image/movies/'+${movie.getImage()}}" alt="Картинка фильма" class="movie-image">
+            </div>
+            <div th:unless="${movie.getImage()}" class="no-image">
+                🎬 Нет изображения
             </div>
             <div class="movie-info">
-                <a th:href="@{'/movies/'+ ${movie.getId()}}" th:text="|${stat.index+1}. ${movie.getTitle()}|">фильм</a>
-                <p th:text="|Год выпуска: ${movie.getReleaseYear()}|">год выпуска</p>
+                <span class="movie-number" th:text="${stat.index+1}">1</span>
+                <a th:href="@{'/movies/' + ${movie.getId()}}" th:text="${movie.getTitle()}">movie</a>
+            </div>
+            <div th:if="${isAuth}">
+                <form th:action="@{/movies/addMovie/{movieId}(movieId=${movie.id})}"
+                      th:if="${favoriteMoviesIds != null and !(favoriteMoviesIds.contains(movie.id))}"
+                      method="post">
+                    <input type="hidden" name="redirectUrl" th:value="${currentUrl}">
+                    <button type="submit" class="heart-button">
+                        <i class="fa-regular fa-heart"></i>
+                    </button>
+                </form>
+
+                <form th:action="@{/movies/removeMovie/{movieId}(movieId=${movie.id})}"
+                      th:if="${favoriteMoviesIds != null and (favoriteMoviesIds.contains(movie.id))}"
+                      method="post">
+                    <input type="hidden" name="redirectUrl" th:value="${currentUrl}">
+                    <button type="submit" class="heart-button red">
+                        <i class="fa-solid fa-heart"></i>
+                    </button>
+                </form>
             </div>
         </div>
-    </form>
-
-    <div class="add-remove-section">
-        <form th:action="@{/actors/{id}/update/addMovies(id=${actor.getId()})}" method="post">
-            <div class="form-group">
-                <label for="moviesToAdd" class="section-header">➕ Выберите фильмы для добавления:</label>
-                <select id="moviesToAdd" multiple name="moviesIds">
-                    <option th:each="movie : ${movies}"
-                            th:value="${movie.getId()}"
-                            th:text="${movie.getTitle()}">фильм
-                    </option>
-                </select>
-            </div>
-            <button type="submit">➕ Добавить</button>
-        </form>
     </div>
 
-    <div class="add-remove-section">
-        <form th:action="@{/actors/{id}/update/removeMovies(id=${actor.getId()})}" method="post">
-            <div class="form-group">
-                <label for="moviesToRemove" class="section-header">➖ Выберите фильмы для удаления:</label>
-                <select id="moviesToRemove" multiple name="moviesIds">
-                    <option th:each="movie : ${actor.getMovies()}"
-                            th:value="${movie.getId()}"
-                            th:text="${movie.getTitle()}">фильм
-                    </option>
-                </select>
-            </div>
-            <button type="submit">➖ Удалить</button>
-        </form>
+    <div class="pagination">
+        <a th:if="${movies.metadata.hasPrevious}"
+           th:href="@{/actors/{id}(id = ${actor.getId()}, page=${movies.metadata.page - 1})}">
+            ◀ Назад
+        </a>
+
+        <span th:each="i : ${#numbers.sequence(0, movies.metadata.totalElements - 1)}">
+        <a th:if="${i != movies.metadata.page}"
+           th:href="@{/actors/{id}(id = ${actor.getId()},page=${i})}"
+           th:text="${i + 1}"></a>
+
+        <span th:if="${i == movies.metadata.page}"
+              th:text="${i + 1}"
+              style="font-weight: bold; text-decoration: underline;"></span>
+    </span>
+
+        <a th:if="${movies.metadata.hasNext}"
+           th:href="@{/actors/{id}(id = ${actor.getId()}, page=${movies.metadata.page + 1})}">
+            Вперёд ▶
+        </a>
     </div>
 
-    <form th:action="@{/actors/{id}/delete(id = ${actor.getId()})}" method="post">
-        <button type="submit" class="delete-button">🗑️ Удалить актера</button>
-    </form>
+    <!-- Секции добавления/удаления фильмов только для администратора -->
+    <div sec:authorize="hasAuthority('testapp.admin')">
+        <div class="add-remove-section">
+            <form th:action="@{/actors/{id}/update/addMovies(id=${actor.getId()})}" method="post">
+                <div class="form-group">
+                    <label for="moviesToAdd" class="section-header">➕ Выберите фильмы для добавления:</label>
+                    <select id="moviesToAdd" multiple name="moviesIds">
+                        <option th:each="movie : ${all_movies}"
+                                th:value="${movie.getId()}"
+                                th:text="${movie.getTitle()}">фильм
+                        </option>
+                    </select>
+                </div>
+                <button type="submit">➕ Добавить</button>
+            </form>
+        </div>
+
+        <div class="add-remove-section">
+            <form th:action="@{/actors/{id}/update/removeMovies(id=${actor.getId()})}" method="post">
+                <div class="form-group">
+                    <label for="moviesToRemove" class="section-header">➖ Выберите фильмы для удаления:</label>
+                    <select id="moviesToRemove" multiple name="moviesIds">
+                        <option th:each="movie : ${actor.getMovies()}"
+                                th:value="${movie.getId()}"
+                                th:text="${movie.getTitle()}">фильм
+                        </option>
+                    </select>
+                </div>
+                <button type="submit">➖ Удалить</button>
+            </form>
+        </div>
+
+        <form th:action="@{/actors/{id}/delete(id = ${actor.getId()})}" method="post">
+            <button type="submit" class="delete-button">🗑️ Удалить актера</button>
+        </form>
+    </div>
 </div>
 </body>
 </html>

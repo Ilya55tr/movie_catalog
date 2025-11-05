@@ -137,4 +137,10 @@ public class ActorService {
                 .map(actorMapper::toReadDto);
     }
 
+    public Page<ActorReadDto> getActorsByMovieId(Integer movieId,
+                                                 Pageable pageable){
+        return actorRepository
+                .findActorsByMovies_Id(movieId, pageable)
+                .map(actorMapper::toReadDto);
+    }
 }

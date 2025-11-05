@@ -5,12 +5,17 @@ import com.IlyaTr.movie_catalog.dto.PageResponse;
 import com.IlyaTr.movie_catalog.dto.actor.ActorCreateEditDto;
 import com.IlyaTr.movie_catalog.dto.actor.ActorReadDto;
 import com.IlyaTr.movie_catalog.dto.filter.ActorFilter;
+import com.IlyaTr.movie_catalog.dto.movie.MovieShortDto;
 import com.IlyaTr.movie_catalog.services.ActorService;
 import com.IlyaTr.movie_catalog.services.MovieService;
+import com.IlyaTr.movie_catalog.services.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -19,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.List;
+
 @Controller
 @RequestMapping("/actors")
 @RequiredArgsConstructor
@@ -26,6 +33,7 @@ public class ActorController {
 
     private final ActorService actorService;
     private final MovieService movieService;
+    private final UserService userService;
 
     @GetMapping("/create")
     public String createActor(Model model){
@@ -66,9 +74,27 @@ public class ActorController {
     }
 
     @GetMapping("/{id}")
-    public String getActor(Model model, @PathVariable Integer id){
+    public String getActor(Model model,
+                           @PathVariable Integer id,
+                           @PageableDefault(size = 3) Pageable pageable,
+                           Authentication auth,
+                           HttpServletRequest request){
+        Page<MovieShortDto> movies = movieService.findMoviesByActorId(id, pageable);
+        model.addAttribute("movies", PageResponse.of(movies));
+        model.addAttribute("all_movies", movieService.findAll());
         model.addAttribute("actor", actorService.findById(id));
-        model.addAttribute("movies", movieService.findAll());
+        if (auth!=null){
+            model.addAttribute("isAuth",
+                    auth.isAuthenticated());
+            List<Integer> moviesIds =  userService
+                    .getFavoritesMovies(auth.getName())
+                    .stream().map(MovieShortDto::getId).toList();
+            model.addAttribute("favoriteMoviesIds", moviesIds);
+
+            String currentUrl = request.getRequestURI() +
+                                (request.getQueryString() != null ? "?" + request.getQueryString() : "");
+            model.addAttribute("currentUrl", currentUrl);
+        }
         return "actor/actor";
     }
 

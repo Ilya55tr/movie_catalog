@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org">
+    <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <title>Все актеры</title>
     <style>
         * {
@@ -229,10 +229,11 @@
 </head>
 <body>
 <div class="container">
+    <div th:insert="~{/user/userMenuFragments :: UserMenu}"></div>
     <div class="header">
         <h1>⭐ Актеры</h1>
         <div class="nav-buttons">
-            <form th:action="@{/actors/create}" method="get" style="display: inline;">
+            <form sec:authorize="hasAuthority('testapp.admin')"  th:action="@{/actors/create}" method="get" style="display: inline;">
                 <button type="submit" class="add-button">➕ Добавить нового актера</button>
             </form>
             <form th:action="@{/movies}" method="get" style="display: inline;">
@@ -271,7 +272,7 @@
     <div class="actors-grid">
         <div th:each="actor, stat : ${actors.getContent()}" class="actor-card">
             <div th:if="${actor.getImage()}">
-                <img th:src="@{'/api/v1/actor/actors/'+${actor.getImage()}}" alt="Картинка актера" class="actor-image">
+                <img th:src="@{'/api/v1/image/actors/'+${actor.getImage()}}" alt="Картинка актера" class="actor-image">
             </div>
             <div th:unless="${actor.getImage()}" class="no-image">
                 ⭐ Нет изображения
@@ -311,7 +312,7 @@
     </span>
 
         <!-- Кнопка Вперёд -->
-        <a th:if="${actors.metadata.page}"
+        <a th:if="${actors.metadata.hasNext}"
            th:href="@{/actors(page=${actors.metadata.page + 1},
        size=${actors.metadata.size},
        fullName=${actorFilter.fullName},

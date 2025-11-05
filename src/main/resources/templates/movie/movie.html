@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org">
+    <meta charset="UTF-8" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
     <title>Фильм</title>
     <style>
         * {
@@ -180,10 +180,41 @@
             margin-bottom: 15px;
             font-size: 18px;
         }
+
+        .pagination {
+            margin-top: 15px;
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .pagination a {
+            text-decoration: none;
+            color: #0066cc;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+
+        .pagination a:hover {
+            background-color: #e0e0e0;
+        }
+
+        .info-field {
+            padding: 12px 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            font-size: 16px;
+            color: #333;
+            border: 2px solid #e0e0e0;
+        }
+
     </style>
 </head>
 <body>
 <div class="container">
+
+    <div th:insert="~{/user/userMenuFragments :: UserMenu}"></div>
+
     <div class="nav-buttons">
         <form th:action="@{/genres}" method="get" style="display: inline;">
             <button type="submit">🎭 Показать все жанры</button>
@@ -196,7 +227,8 @@
         </form>
     </div>
 
-    <form th:action="@{/movies/{id}/update(id=${movie.getId()})}" method="post" enctype="multipart/form-data" th:object="${movie}">
+    <!-- Форма редактирования для администратора -->
+    <form sec:authorize="hasAuthority('testapp.admin')" th:action="@{/movies/{id}/update(id=${movie.getId()})}" method="post" enctype="multipart/form-data" th:object="${movie}">
         <h1>🎬 Фильм</h1>
 
         <div class="form-group">
@@ -210,7 +242,7 @@
         </div>
 
         <div th:if="${movie.getImage()}">
-            <img th:src="@{'/api/v1/movie/movies/'+${movie.getImage()}}" alt="Картинка фильма" class="movie-image">
+            <img th:src="@{'/api/v1/image/movies/'+${movie.getImage()}}" alt="Картинка фильма" class="movie-image">
         </div>
 
         <div class="form-group">
@@ -244,51 +276,114 @@
         <div th:if="${errors}">
             <p th:each="error:${errors}" th:text="${error.defaultMessage}">error</p>
         </div>
-        <h3>⭐ Актеры фильма:</h3>
-        <div th:each="actor, stat: *{getActors()}" class="actor-card">
-            <div th:if="${actor.getImage()}">
-                <img th:src="@{'/api/v1/actor/actors/'+${actor.getImage()}}" alt="Картинка актера" class="actor-image">
-            </div>
-            <div class="actor-info">
-                <a th:href="@{'/actors/'+ ${actor.getId()}}" th:text="|${stat.index+1}. ${actor.getFullName()}|">актер</a>
-                <p th:text="|Дата рождения: ${actor.getBirthDate()}|">birthdate</p>
-            </div>
+    </form>
+
+    <!-- Просмотр информации для обычных пользователей и неавторизованных -->
+    <div sec:authorize="!hasAuthority('testapp.admin')">
+        <h1>🎬 Фильм</h1>
+
+        <div class="form-group">
+            <label>Название:</label>
+            <div class="info-field" th:text="${movie.getTitle()}">Название фильма</div>
         </div>
-    </form>
 
-    <div class="add-remove-section">
-        <form th:action="@{/movies/{id}/update/addActors(id=${movie.getId()})}" method="post">
-            <div class="form-group">
-                <label for="actorsToAdd" class="section-header">➕ Выберите актеров для добавления:</label>
-                <select id="actorsToAdd" multiple name="actorsIds">
-                    <option th:each="actor : ${actors}"
-                            th:value="${actor.getId()}"
-                            th:text="${actor.getFullName()}">имя
-                    </option>
-                </select>
-            </div>
-            <button type="submit">➕ Добавить</button>
-        </form>
+        <div th:if="${movie.getImage()}">
+            <img th:src="@{'/api/v1/image/movies/'+${movie.getImage()}}" alt="Картинка фильма" class="movie-image">
+        </div>
+
+        <div class="form-group">
+            <label>Год выпуска:</label>
+            <div class="info-field" th:text="${movie.getReleaseYear()}">Год</div>
+        </div>
+
+        <div class="form-group">
+            <label>Рейтинг:</label>
+            <div class="info-field" th:text="${movie.getRating()}">Рейтинг</div>
+        </div>
+
+        <div class="form-group">
+            <label>Описание:</label>
+            <div class="info-field" th:text="${movie.getDescription()}">Описание</div>
+        </div>
+
+        <div class="form-group">
+            <label>Жанр:</label>
+            <div class="info-field" th:text="${movie.getGenre().getName()}">Жанр</div>
+        </div>
     </div>
 
-    <div class="add-remove-section">
-        <form th:action="@{/movies/{id}/update/removeActors(id=${movie.getId()})}" method="post">
-            <div class="form-group">
-                <label for="actorsToRemove" class="section-header">➖ Выберите актеров для удаления:</label>
-                <select id="actorsToRemove" multiple name="actorsIds">
-                    <option th:each="actor : ${movie.getActors()}"
-                            th:value="${actor.getId()}"
-                            th:text="${actor.getFullName()}">имя
-                    </option>
-                </select>
-            </div>
-            <button type="submit">➖ Удалить</button>
-        </form>
+    <h3>⭐ Актеры фильма:</h3>
+    <div th:each="actor, stat: *{actors.content}" class="actor-card">
+        <div th:if="${actor.getImage()}">
+            <img th:src="@{'/api/v1/image/actors/'+${actor.getImage()}}" alt="Картинка актера" class="actor-image">
+        </div>
+        <div class="actor-info">
+            <a th:href="@{'/actors/'+ ${actor.getId()}}" th:text="|${stat.index+1}. ${actor.getFullName()}|">актер</a>
+            <p th:text="|Дата рождения: ${actor.getBirthDate()}|">birthdate</p>
+        </div>
     </div>
 
-    <form th:action="@{/movies/{id}/delete(id=${movie.getId()})}" method="post">
-        <button type="submit" class="delete-button">🗑️ Удалить фильм</button>
-    </form>
+    <div class="pagination">
+        <!-- Кнопка Назад -->
+        <a th:if="${actors.metadata.hasPrevious}"
+           th:href="@{/movies/{id}(id = ${movie.getId()}, page=${actors.metadata.page - 1})}">
+            ◀ Назад
+        </a>
+
+        <!-- Номера страниц -->
+        <span th:each="i : ${#numbers.sequence(0, actors.metadata.totalElements - 1)}">
+        <a th:if="${i != actors.metadata.page}"
+           th:href="@{/movies/{id}(id = ${movie.getId()},page=${i})}"
+           th:text="${i + 1}"></a>
+
+        <span th:if="${i == actors.metadata.page}"
+              th:text="${i + 1}"
+              style="font-weight: bold; text-decoration: underline;"></span>
+    </span>
+
+        <!-- Кнопка Вперёд -->
+        <a th:if="${actors.metadata.hasNext}"
+           th:href="@{/movies/{id}(id = ${movie.getId()}, page=${actors.metadata.page + 1})}">
+            Вперёд ▶
+        </a>
+    </div>
+
+    <!-- Секции добавления/удаления актеров только для администратора -->
+    <div sec:authorize="hasAuthority('testapp.admin')">
+        <div class="add-remove-section">
+            <form th:action="@{/movies/{id}/update/addActors(id=${movie.getId()})}" method="post">
+                <div class="form-group">
+                    <label for="actorsToAdd" class="section-header">➕ Выберите актеров для добавления:</label>
+                    <select id="actorsToAdd" multiple name="actorsIds">
+                        <option th:each="actor : ${all_actors}"
+                                th:value="${actor.getId()}"
+                                th:text="${actor.getFullName()}">имя
+                        </option>
+                    </select>
+                </div>
+                <button type="submit">➕ Добавить</button>
+            </form>
+        </div>
+
+        <div class="add-remove-section">
+            <form th:action="@{/movies/{id}/update/removeActors(id=${movie.getId()})}" method="post">
+                <div class="form-group">
+                    <label for="actorsToRemove" class="section-header">➖ Выберите актеров для удаления:</label>
+                    <select id="actorsToRemove" multiple name="actorsIds">
+                        <option th:each="actor : ${movie.getActors()}"
+                                th:value="${actor.getId()}"
+                                th:text="${actor.getFullName()}">имя
+                        </option>
+                    </select>
+                </div>
+                <button type="submit">➖ Удалить</button>
+            </form>
+        </div>
+
+        <form th:action="@{/movies/{id}/delete(id=${movie.getId()})}" method="post">
+            <button type="submit" class="delete-button">🗑️ Удалить фильм</button>
+        </form>
+    </div>
 </div>
 </body>
 </html>
