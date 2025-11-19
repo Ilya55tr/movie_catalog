@@ -240,11 +240,11 @@
 </head>
 <body>
 <div class="container">
-    <div th:insert="~{/user/userMenuFragments :: UserMenu}"></div>
+    <div th:insert="~{user/userMenuFragments :: UserMenu}"></div>
     <div class="header">
         <h1>🎬 Фильмы</h1>
         <div class="nav-buttons">
-            <form sec:authorize="hasAuthority('testapp.admin')" th:action="@{/movies/create}" method="get" style="display: inline;">
+            <form sec:authorize="hasAuthority('movies_catalog.admin')" th:action="@{/movies/create}" method="get" style="display: inline;">
                 <button type="submit" class="add-button">➕ Добавить новый фильм</button>
             </form>
             <form th:action="@{/genres}" method="get" style="display: inline;">

@@ -1,0 +1,64 @@
+services:
+  postgres:
+    container_name: docker_postgres
+    image: postgres:15
+    env_file:
+      - postgres.env
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend_net
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d movie_catalog" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.4
+    container_name: keycloak
+    command:
+      - start-dev
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HTTP_PORT: 8090
+    ports:
+      - "8090:8090"
+    networks:
+      - backend_net
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+    healthcheck:
+      test: [ "CMD-SHELL", "timeout 1 bash -c 'cat < /dev/null > /dev/tcp/localhost/8090'" ]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      start_period: 40s
+
+  spring_boot:
+    container_name: spring_boot
+    build:
+      context: .
+    ports:
+      - "8091:8091"
+    env_file:
+      - postgres.env
+    depends_on:
+      keycloak:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend_net
+    volumes:
+      - ./images:/app/images
+
+networks:
+  backend_net:
+
+volumes:
+  postgres_data:
+  keycloak_data:

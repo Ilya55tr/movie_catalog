@@ -132,7 +132,7 @@
     </style>
 </head>
 <body>
-<div th:insert="~{/user/userMenuFragments :: UserMenu}"></div>
+<div th:insert="~{user/userMenuFragments :: UserMenu}"></div>
 <div class="container">
     <form th:action="@{/movies}" method="post" enctype="multipart/form-data" th:object="${movie}">
         <h1>🎬 Новый фильм</h1>

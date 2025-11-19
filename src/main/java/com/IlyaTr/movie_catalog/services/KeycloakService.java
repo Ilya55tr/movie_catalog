@@ -39,7 +39,7 @@ public class KeycloakService {
         user.setEmailVerified(false);
         user.setEmail(userDto.getEmail());
         user.setEnabled(true);
-        user.setClientRoles(Map.of("movies_catalog", List.of("testapp.user")));
+        user.setClientRoles(Map.of("movies_catalog", List.of("movies_catalog.user")));
         user.setFirstName(userDto.getFirstName());
         user.setLastName(userDto.getLastName());
         if (userDto.getBirthDate()!=null){

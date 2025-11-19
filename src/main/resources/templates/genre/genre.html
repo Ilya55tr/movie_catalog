@@ -223,7 +223,7 @@
 </head>
 <body>
 <div class="container">
-    <div th:insert="~{/user/userMenuFragments :: UserMenu}"></div>
+    <div th:insert="~{user/userMenuFragments :: UserMenu}"></div>
     <div class="nav-buttons">
         <form th:action="@{/genres}" method="get" style="display: inline;">
             <button type="submit">⬅️ Назад</button>
@@ -237,7 +237,7 @@
     </div>
 
     <!-- Форма редактирования для администратора -->
-    <form sec:authorize="hasAuthority('testapp.admin')" th:action="@{/genres/{id}/update(id=${genre.getId()})}" method="post" enctype="multipart/form-data" th:object="${genre}">
+    <form sec:authorize="hasAuthority('movies_catalog.admin')" th:action="@{/genres/{id}/update(id=${genre.getId()})}" method="post" enctype="multipart/form-data" th:object="${genre}">
         <h1>🎭 Жанр</h1>
 
         <div class="form-group">
@@ -262,7 +262,7 @@
     </form>
 
     <!-- Просмотр информации для обычных пользователей и неавторизованных -->
-    <div sec:authorize="!hasAuthority('testapp.admin')">
+    <div sec:authorize="!hasAuthority('movies_catalog.admin')">
         <h1>🎭 Жанр</h1>
 
         <div class="form-group">
@@ -333,7 +333,7 @@
     </div>
 
     <!-- Кнопка удаления только для администратора -->
-    <form sec:authorize="hasAuthority('testapp.admin')" th:action="@{/genres/{id}/delete(id=${genre.getId()})}" method="post">
+    <form sec:authorize="hasAuthority('movies_catalog.admin')" th:action="@{/genres/{id}/delete(id=${genre.getId()})}" method="post">
         <button type="submit" class="delete-button">🗑️ Удалить жанр</button>
     </form>
 </div>

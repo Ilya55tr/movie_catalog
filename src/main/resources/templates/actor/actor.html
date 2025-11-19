@@ -233,7 +233,7 @@
 </head>
 <body>
 <div class="container">
-    <div th:insert="~{/user/userMenuFragments :: UserMenu}"></div>
+    <div th:insert="~{user/userMenuFragments :: UserMenu}"></div>
     <div class="nav-buttons">
         <form th:action="@{/movies}" method="get" style="display: inline;">
             <button type="submit">🎬 Показать все фильмы</button>
@@ -247,7 +247,7 @@
     </div>
 
     <!-- Форма редактирования для администратора -->
-    <form sec:authorize="hasAuthority('testapp.admin')" th:action="@{/actors/{id}/update(id=${actor.getId()})}" method="post" enctype="multipart/form-data" th:object="${actor}">
+    <form sec:authorize="hasAuthority('movies_catalog.admin')" th:action="@{/actors/{id}/update(id=${actor.getId()})}" method="post" enctype="multipart/form-data" th:object="${actor}">
         <h1>⭐ Актер</h1>
 
         <div th:if="${actor.getImage()}">
@@ -276,7 +276,7 @@
     </form>
 
     <!-- Просмотр информации для обычных пользователей и неавторизованных -->
-    <div sec:authorize="!hasAuthority('testapp.admin')">
+    <div sec:authorize="!hasAuthority('movies_catalog.admin')">
         <h1>⭐ Актер</h1>
 
         <div th:if="${actor.getImage()}">
@@ -352,7 +352,7 @@
     </div>
 
     <!-- Секции добавления/удаления фильмов только для администратора -->
-    <div sec:authorize="hasAuthority('testapp.admin')">
+    <div sec:authorize="hasAuthority('movies_catalog.admin')">
         <div class="add-remove-section">
             <form th:action="@{/actors/{id}/update/addMovies(id=${actor.getId()})}" method="post">
                 <div class="form-group">

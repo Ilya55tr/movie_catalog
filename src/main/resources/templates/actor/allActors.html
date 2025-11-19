@@ -229,11 +229,11 @@
 </head>
 <body>
 <div class="container">
-    <div th:insert="~{/user/userMenuFragments :: UserMenu}"></div>
+    <div th:insert="~{user/userMenuFragments :: UserMenu}"></div>
     <div class="header">
         <h1>⭐ Актеры</h1>
         <div class="nav-buttons">
-            <form sec:authorize="hasAuthority('testapp.admin')"  th:action="@{/actors/create}" method="get" style="display: inline;">
+            <form sec:authorize="hasAuthority('movies_catalog.admin')"  th:action="@{/actors/create}" method="get" style="display: inline;">
                 <button type="submit" class="add-button">➕ Добавить нового актера</button>
             </form>
             <form th:action="@{/movies}" method="get" style="display: inline;">
